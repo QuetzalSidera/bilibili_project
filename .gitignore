@@ -1,0 +1,6 @@
+*.html
+video_split/
+video_result/
+picture/
+.venv/
+.idea/
