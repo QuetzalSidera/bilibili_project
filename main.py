@@ -71,7 +71,7 @@ def get_video_and_html(target_url):
             base_info = "".join(tree.xpath("/html/head/script[4]/text()"))[20:]
             # print(base_info)
             info_dict = json.loads(base_info)
-            print("try")
+            print("html解码方式一(try)")
             video_url = info_dict["data"]["dash"]['video'][0]["baseUrl"]
             audio_url = info_dict["data"]["dash"]['audio'][0]["baseUrl"]
         except JSONDecodeError:
@@ -81,10 +81,10 @@ def get_video_and_html(target_url):
             base_info = str(base_info)
             base_info = re.findall("const\splayurlSSRData\s=\s.*?}}}}", base_info)[0]
             base_info = base_info[23:]
-            print(base_info)
+            #print(base_info)
             info_dict = json.loads(base_info)
-            print(info_dict)
-            print("except")
+            #print(info_dict)
+            print("html解码方式二(except)")
             video_url = info_dict["result"]["video_info"]["dash"]["video"][0]["baseUrl"]
             audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
         # except JSONDecodeError:
@@ -289,40 +289,68 @@ if __name__ == '__main__':
         # # 幻想乡の国际歌，超过20种语言接力衔接bad apple
         # "https://www.bilibili.com/video/BV15c41117aN/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
 
-        # 【アイドル】味儿太冲!暴躁男高转生少女爱豆！全网最无违和感偶像中文翻唱
-        "https://www.bilibili.com/video/BV1Uc411M7Xd/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 手牵少女机器人成长日记
-        "https://www.bilibili.com/video/BV17Z4y187Jr/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 用交往过的女孩子的名字翻唱了アイドル (Idol)
-        "https://www.bilibili.com/video/BV1Eu41187Xc/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 【俄语翻唱】推しの子 OP——『アイドル 』
-        "https://www.bilibili.com/video/BV1zN411D7Ep/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 【官方英文版】YOASOBI「アイドル (偶像)」MV English Ver.
-        "https://www.bilibili.com/video/BV17k4y1x7k9/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 千万不要得罪动画角色！！！
-        "https://www.bilibili.com/video/BV1GE421w74b/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 用《权力的游戏》片头打开中国四大一线城市
-        "https://www.bilibili.com/video/BV1r4411V7WD/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 【头脑特工队钢琴】 不同情绪的头脑特工队主题曲
-        "https://www.bilibili.com/video/BV1jf421z7tS/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 【魔法满屋】What Else Can I Do?
-        "https://www.bilibili.com/video/BV15u411D7rZ/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # I See The Light -《魔发奇缘》史诗管弦乐改编
-        "https://www.bilibili.com/video/BV1JW4y1B7Uj/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 徐佳莹《湫兮如风》+陈奕迅《在这个世界相遇》+周深《大鱼》《大鱼海棠》片尾曲/主题曲/印象曲
-        "https://www.bilibili.com/video/BV1ms411B7Pa/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 【冰雪奇缘2】戴上耳机艾莎就在你房间里！8D环绕《Show Yourself》等OST
-        "https://www.bilibili.com/video/BV1rJ41167rv/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 【冰雪奇缘】《Let it go》8D版，戴上耳机感受环绕音！
-        "https://www.bilibili.com/video/BV1EJ411n7Tm/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # 【4K超高清】千本桜原版MV feat 初音ミク
-        "https://www.bilibili.com/video/BV1sM4y1V7x1/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # ⚡不时洗脑你的艾莉同学⚡
-        "https://www.bilibili.com/video/BV1pz421i7cu/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
-        # ⚡滋 滋 滋 崩 崩 崩⚡
-        "https://www.bilibili.com/video/BV1sE421P7Vv/?spm_id_from=333.337.search-card.all.click&vd_source=61265f50c4aea555795addd1d882df45",
-        # 【上坂堇/H2O/谭咏麟】「想い出がいっぱい/爱的替身」（《不时轻声地以俄语遮羞的邻座艾莉同学》第三集ED及两版原唱MV）
-        "https://www.bilibili.com/video/BV1Yb421E77k/?spm_id_from=333.788.recommend_more_video.2&vd_source=61265f50c4aea555795addd1d882df45"
+        # # 【アイドル】味儿太冲!暴躁男高转生少女爱豆！全网最无违和感偶像中文翻唱
+        # "https://www.bilibili.com/video/BV1Uc411M7Xd/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 手牵少女机器人成长日记
+        # "https://www.bilibili.com/video/BV17Z4y187Jr/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 用交往过的女孩子的名字翻唱了アイドル (Idol)
+        # "https://www.bilibili.com/video/BV1Eu41187Xc/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 【俄语翻唱】推しの子 OP——『アイドル 』
+        # "https://www.bilibili.com/video/BV1zN411D7Ep/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 【官方英文版】YOASOBI「アイドル (偶像)」MV English Ver.
+        # "https://www.bilibili.com/video/BV17k4y1x7k9/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 千万不要得罪动画角色！！！
+        # "https://www.bilibili.com/video/BV1GE421w74b/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 用《权力的游戏》片头打开中国四大一线城市
+        # "https://www.bilibili.com/video/BV1r4411V7WD/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 【头脑特工队钢琴】 不同情绪的头脑特工队主题曲
+        # "https://www.bilibili.com/video/BV1jf421z7tS/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 【魔法满屋】What Else Can I Do?
+        # "https://www.bilibili.com/video/BV15u411D7rZ/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # I See The Light -《魔发奇缘》史诗管弦乐改编
+        # "https://www.bilibili.com/video/BV1JW4y1B7Uj/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 徐佳莹《湫兮如风》+陈奕迅《在这个世界相遇》+周深《大鱼》《大鱼海棠》片尾曲/主题曲/印象曲
+        # "https://www.bilibili.com/video/BV1ms411B7Pa/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 【冰雪奇缘2】戴上耳机艾莎就在你房间里！8D环绕《Show Yourself》等OST
+        # "https://www.bilibili.com/video/BV1rJ41167rv/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 【冰雪奇缘】《Let it go》8D版，戴上耳机感受环绕音！
+        # "https://www.bilibili.com/video/BV1EJ411n7Tm/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 【4K超高清】千本桜原版MV feat 初音ミク
+        # "https://www.bilibili.com/video/BV1sM4y1V7x1/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # ⚡不时洗脑你的艾莉同学⚡
+        # "https://www.bilibili.com/video/BV1pz421i7cu/?spm_id_from=333.999.0.0&vd_source=61265f50c4aea555795addd1d882df45",
+        # # ⚡滋 滋 滋 崩 崩 崩⚡
+        # "https://www.bilibili.com/video/BV1sE421P7Vv/?spm_id_from=333.337.search-card.all.click&vd_source=61265f50c4aea555795addd1d882df45",
+        # # 【上坂堇/H2O/谭咏麟】「想い出がいっぱい/爱的替身」（《不时轻声地以俄语遮羞的邻座艾莉同学》第三集ED及两版原唱MV）
+        # "https://www.bilibili.com/video/BV1Yb421E77k/?spm_id_from=333.788.recommend_more_video.2&vd_source=61265f50c4aea555795addd1d882df45",
+
+        # # gbc全集 分集可用p=x代替
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=1&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=2&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=3&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=4&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=5&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=6&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=7&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=8&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=9&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=10&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=11&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=12&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=13&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=14&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=15&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=16&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=17&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=18&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=19&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=20&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=21&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=22&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=23&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=24&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=25&vd_source=61265f50c4aea555795addd1d882df45",
+        # "https://www.bilibili.com/video/BV16D421M7x2?p=26&vd_source=61265f50c4aea555795addd1d882df45",
     ]
     video_keyword_list = [
         # "猫meme",
