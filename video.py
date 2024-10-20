@@ -73,7 +73,9 @@ def keywords_to_url(keyword, app_type, select_enable):
             print("您选择的项目标题为:")
             for title in in_func_title_list:
                 print(title)
+            print("\n")
             sleep(2)
+
     return in_func_url_list
 
 
@@ -123,7 +125,8 @@ def get_video_and_html(target_url, mode):
             base_info = "".join(tree.xpath("/html/head/script[4]/text()"))[20:]
             # print(base_info)
             info_dict = json.loads(base_info)
-            print("html解码方式一(try)")
+            # print("html解码方式一(try)")
+            print("该视频非大会员专享或限免视频")
             video_url = info_dict["data"]["dash"]['video'][0]["baseUrl"]
             audio_url = info_dict["data"]["dash"]['audio'][0]["baseUrl"]
         except JSONDecodeError:
@@ -135,7 +138,8 @@ def get_video_and_html(target_url, mode):
             # print(base_info)
             info_dict = json.loads(base_info)
             # print(info_dict)
-            print("html解码方式二(except)")
+            # print("html解码方式二(except)")
+            print("该视频为限免视频")
             video_url = info_dict["result"]["video_info"]["dash"]["video"][0]["baseUrl"]
             audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
 

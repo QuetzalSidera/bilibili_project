@@ -64,7 +64,7 @@ video_config = {
     # BVID与AVID
     # "BV1ss41117Z1": [],
     # 关键词检索
-    "俄罗斯抽象视频": [-1,1]
+    "想い出がいっぱい": [-1,1]
 }
 
 # debug_setting_variables
