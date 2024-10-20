@@ -67,5 +67,5 @@ def user_interface(config_dict):
             in_func_key = key
             config_dict[key].append(identity_flag)
             in_func_dict[in_func_key] = config_dict[key]
-    print(in_func_dict)
+    # print(in_func_dict)
     return in_func_dict

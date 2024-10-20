@@ -1,4 +1,3 @@
-from user_config import *
 from image import *
 from video import *
 main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：debug程序
@@ -58,7 +57,7 @@ if __name__ == '__main__':
             get_video_and_html(key, video_url_dict[key])
 
     # 二、爬取图片
-    if main_debug_setting == 0 or main_debug_setting == 1:
+    if main_debug_setting == 1 or main_debug_setting == 2:
         # 1.图片url配置
         if len(picture_key_word_list) != 0:
             for key_word in picture_key_word_list:

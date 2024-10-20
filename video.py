@@ -1,11 +1,13 @@
 from json import JSONDecodeError
+from time import sleep
+
 import requests
 from lxml import etree
 import json
 from bs4 import BeautifulSoup
 from moviepy.editor import *
 from interface import *
-
+from user_config import *
 
 def keywords_to_url(keyword, app_type, select_enable):
     global to_select_num
@@ -54,20 +56,24 @@ def keywords_to_url(keyword, app_type, select_enable):
                 url_list_temp = url_list_temp[0:to_select_num]
                 title_list_temp = title_list_temp[0:to_select_num]
             print("关键词检索，交互模式，以下是可供选择的项目:")
+
             for i in range(1, len(title_list_temp) + 1):
                 title = title_list_temp[i - 1]
                 print(str(i) + "." + title)
+            select_result = eval(input("请输入您选择的视频序号,输入0退出选择:"))
+            while select_result != 0:
+                selected_id_list.append(select_result)
                 select_result = eval(input("请输入您选择的视频序号,输入0退出选择:"))
-                while select_result != 0:
-                    selected_id_list.append(select_result)
-                    select_result = eval(input("请输入您选择的视频序号,输入0退出选择:"))
-                print("退出交互模式")
+            print("退出交互模式\n\n")
+            sleep(1)
             for selected_id in selected_id_list:
                 in_func_url_list.append(url_list_temp[selected_id - 1])
                 in_func_title_list.append(title_list_temp[selected_id - 1])
+
             print("您选择的项目标题为:")
             for title in in_func_title_list:
                 print(title)
+            sleep(2)
     return in_func_url_list
 
 
@@ -135,25 +141,25 @@ def get_video_and_html(target_url, mode):
 
         if mode == -1 or mode == -4:  # 全视频或画面
             video_content = requests.get(video_url, headers=head).content
-            print(video_url)
+            # print(video_url)
             with open("video_file/" + title + "_video.mp4", "wb") as f:
                 f.write(video_content)
                 f.close()
                 if mode == -1:
-                    print("获取整个视频，画面已获取成功\n")
+                    print("获取整个视频，画面已获取成功")
                 else:
-                    print("仅获取画面，画面获取成功\n")
+                    print("仅获取画面，画面获取成功")
 
         if mode == -1 or mode == -2:  # 全视频或音频
             audio_content = requests.get(audio_url, headers=head).content
-            print(audio_url)
+            # print(audio_url)
             with open("audio_file/" + title + "_audio.wav", "wb+") as fp:
                 fp.write(audio_content)
                 fp.close()
                 if mode == -1:
-                    print("获取整个视频，音频已获取成功\n")
+                    print("获取整个视频，音频已获取成功")
                 else:
-                    print("仅获取音频，音频获取成功\n")
+                    print("仅获取音频，音频获取成功")
 
         if mode == -1:
             print("音频与画面获取结束，音画合并中\n")

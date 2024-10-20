@@ -54,13 +54,17 @@ head = {
 
 
 # 通用用户接口
+# BV号: [模式，集数]
+# url: [模式，集数]
+# 关键词: [模式，select_enable?](关键词检索若遇到分集不能爬去所有集数，只能爬取第一集)select_enable==0不交互，select_enable==1交互
+# 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面
 video_config = {
     # url
-    "https://www.bilibili.com/video/BV1ss41117Z8": [],
+    # "https://www.bilibili.com/video/BV1ss41117Z8": [],
     # BVID与AVID
-    "BV1ss41117Z1": [],
+    # "BV1ss41117Z1": [],
     # 关键词检索
-    "俄罗斯抽象视频": []
+    "俄罗斯抽象视频": [-1,1]
 }
 
 # debug_setting_variables
@@ -69,10 +73,10 @@ main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：de
 
 # 关键词检索默认
 default_select = 0  # 默认直接取前几位，而非进行交互选择
-# case default_select == 0 默认模式
+# case default_select == 0 默认不交互模式
 default_number_of_videos = 2  # 默认返回检索结果的前number_of_videos个视频
 # case default_select == 1 交互模式
-to_select_num = -1  # 交互模式下，返回的检索结果数，to_select_num==-1则不限检索结果数，尽数打印
+to_select_num = 10  # 交互模式下，返回的检索结果数，to_select_num==-1则不限检索结果数，尽数打印
 
 # 通用默认
 default_mode = 0  # mode == -1:全流程(整个完整视频) -2:获取mp3 -3:获取html -4:获取画面
