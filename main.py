@@ -1,45 +1,87 @@
 from json import JSONDecodeError
-
 import requests
 from lxml import etree
 import json
 from bs4 import BeautifulSoup
 from moviepy.editor import *
 import re
-from ref import *
-
-number_of_videos = 2  # 返回检索结果的前number_of_videos个视频
-
-
-# def data_analyse(res_text):
-#     video_url_list=
-#     return video_url, audio_url
+from user_config import *
 
 
 # alt = "【中日字幕/ED3完整版】不时轻声地以俄语遮羞的邻座艾莉同学 ED3「想い出がいっぱい」/ アーリャ(CV:上坂すみれ)"搜索得到的标题在alt里面
 # 关键词转化为视频url函数
-def keywords_to_url(keyword_list, app_type):
-    url_list = []
-    title_list = []
+def keywords_to_url(keyword_dict, app_type):
+    in_func_url_dict = {}  # 添加in_func_前缀以区分
+    in_func_title_dict = {}
     if app_type == "bilibili":
-        for i in range(len(keyword_list)):
-            keyword_list[i - 1] = "https://search.bilibili.com/all?keyword=" + keyword_list[i - 1]  # 转化为搜索页面网址
-            response = requests.get(keyword_list[i - 1], headers=head)
+        for keyword in keyword_dict:
+            # 获取搜索页面html，预处理得到原始list
+            search_url = "https://search.bilibili.com/all?keyword=" + keyword  # 转化为搜索页面网址
+            response = requests.get(search_url, headers=head)
             url_list_temp = re.findall('href=\"//www.*?\"', response.text)
             title_list_temp = re.findall('alt=\"(.*?)\"', response.text)
-            for j in range(len(url_list_temp)):
-                url_list_temp[j - 1] = "https://" + url_list_temp[j - 1][8:-1]
-            for j in range(len(title_list_temp)):
-                title_list_temp[j - 1] = url_list_temp[j - 1][5:-1]
+            # print(response.text)
+            # print(title_list_temp)
             # print(url_list_temp)
-            url_list += url_list_temp[0:2 * number_of_videos:2]  # 此处可以配置视频选择方法
-            title_list += title_list_temp[0:2 * number_of_videos:2]
-            # print(url_list)
-    # print(title_list)
-    return url_list
+
+            # list处理
+            # url_list_temp处理
+            url_list_temp.pop(-1)  # 最后一个是'https://www.bilibili.com/v/customer-service'
+            for j in range(0, len(url_list_temp)):  # 去除重复项
+                if j % 2 == 0:
+                    url_list_temp[j] = "https://" + url_list_temp[j][8:-1]
+                else:
+                    url_list_temp[j] = ""
+            for url_item in url_list_temp:
+                if url_item == "":
+                    url_list_temp.remove(url_item)
+            # title_list_temp处理
+            for title in title_list_temp:
+                if title == "":
+                    title_list_temp.remove(title)  # 删除空项
+            title_list_temp.pop(0)  # 第一项好像无法通过上面的检查空项的方法删除
+
+            # print(title_list_temp)
+            # print(url_list_temp)
+
+            # 截取list中需要的前几项
+            if keyword_dict[keyword] == 0:
+                url_list_temp = url_list_temp[0:default_number_of_videos]
+                title_list_temp = title_list_temp[0:default_number_of_videos]
+            else:
+                url_list_temp = url_list_temp[0: keyword_dict[keyword]]
+                title_list_temp = title_list_temp[0: keyword_dict[keyword]]
+
+            # print(title_list_temp)
+            # print(url_list_temp)
+
+            # 将list整理成universal_video_url_list格式
+            # 通用video_url_list
+            # 格式 url：集数(不分集的默认集数为1)
+            for url_item in url_list_temp:
+                in_func_url_dict[url_item] = 1
+            for title_item in title_list_temp:
+                in_func_title_dict[title_item] = 1
+
+    # print(in_func_title_dict)
+    # print(in_func_url_dict)
+    return in_func_url_dict
 
 
-get_video_debug_setting = 1  # 0:只获取html，1:全流程
+def from_set_url_get_epi_url_list(set_url, num_of_episode):
+    # 获取BV号
+    in_func_list = []
+    # 分集总url样例"https://www.bilibili.com/video/BV1ss41117Z8/?spm_id_from=333.337.search-card.all.click&vd_source=61265f50c4aea555795addd1d882df45"
+    # 分url样例"https://www.bilibili.com/video/BV1ss41117Z8/?p=3"
+    BVID = "BV" + str(re.findall("/BV(.*?)/", set_url)[0])
+    for i in range(1, num_of_episode + 1):
+        episode_url = "https://www.bilibili.com/video/" + BVID + "/?p=" + str(i)
+        in_func_list.append(episode_url)
+    print(in_func_list)
+    return in_func_list
+
+
+get_video_debug_setting = 0  # 0:全流程,1:只获取html,2:只获取mp3
 
 
 def get_video_and_html(target_url):
@@ -57,9 +99,9 @@ def get_video_and_html(target_url):
             title_list[i - 1] = "|"
     title = "".join(title_list)
     print("视频名称：" + title)
-    if get_video_debug_setting == 0:
-        print("仅获取了html文件")
     if get_video_debug_setting == 1:
+        print("仅获取了html文件")
+    if get_video_debug_setting == 0 or get_video_debug_setting == 2:
         # 数据解析
 
         tree = etree.HTML(res_text)
@@ -83,17 +125,7 @@ def get_video_and_html(target_url):
             print("html解码方式二(except)")
             video_url = info_dict["result"]["video_info"]["dash"]["video"][0]["baseUrl"]
             audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
-        # except JSONDecodeError:
-        #     base_info = "".join(tree.xpath("/html/head/script[4]/text()"))
-        #     base_info = str(base_info)
-        #     base_info = re.findall("const\splayurlSSRData\s=\s.*?}}}}}", base_info)[0]
-        #     base_info = base_info[23:]
-        #     print(base_info)
-        #     info_dict = json.loads(base_info)
-        #     print(info_dict)
-        #     print("except")
-        #     video_url = info_dict["result"]["video_info"]["durl"][0]["url"]
-        #     audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
+
         video_content = requests.get(video_url, headers=head).content
         audio_content = requests.get(audio_url, headers=head).content
 
@@ -104,22 +136,22 @@ def get_video_and_html(target_url):
         if len(title) > 100:
             title = title[:100]
 
-        with open("video_split/" + title + "_video.mp4", "wb") as f:
-            f.write(video_content)
-            f.close()
-            print("画面获取成功")
-        with open("video_split/" + title + "_audio.mp3", "wb+") as fp:
+        with open("video_split/" + title + "_audio.wav", "wb+") as fp:
             fp.write(audio_content)
             fp.close()
             print("音频获取成功")
-        # 文件合并
-        video_path = "video_split/" + title + "_video.mp4"
-        audio_path = "video_split/" + title + "_audio.mp3"
-        video = VideoFileClip(video_path, audio=False)
-        audio = AudioFileClip(audio_path)
-        video = video.set_audio(audio)
-        video = video.set_audio(audio)
-        video.write_videofile("video_result/" + title + ".mp4")
+        if get_video_debug_setting == 0:
+            with open("video_split/" + title + "_video.mp4", "wb") as f:
+                f.write(video_content)
+                f.close()
+                print("画面获取成功")
+            # 文件合并
+            video_path = "video_split/" + title + "_video.mp4"
+            audio_path = "video_split/" + title + "_audio.wav"
+            video = VideoFileClip(video_path, audio=False)
+            audio = AudioFileClip(audio_path)
+            video = video.set_audio(audio)
+            video.write_videofile("video_result/" + title + ".mp4")
 
 
 # end_of_get_video
@@ -132,6 +164,7 @@ depth = 0  # 全局变量，用于记录当前递归调用次数
 
 
 def get_image(target_url, recursive=0):  # 输入网址获取图片
+    global max_depth
     response = requests.get(target_url, headers=head)
     response.encoding = response.apparent_encoding
     global depth  # 递归总深度
@@ -197,9 +230,33 @@ def get_image(target_url, recursive=0):  # 输入网址获取图片
 
 main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：debug程序
 if __name__ == '__main__':
-    # 一、url配置
-    video_url_list += keywords_to_url(keyword_list=video_keyword_list, app_type="bilibili")
+    # 一、视频url配置
+    # 通用video_url_dict
+    # 格式 url：集数(不分集的默认集数为1)
+    universal_video_url_dict = {}
+    # 1)不分集视频
+    for item in video_config:
+        if item[0:2] == "BV":
+            item = "https://www.bilibili.com/video/" + item
+            universal_video_url_dict[item] = 1
+        else:
+            universal_video_url_dict[item] = 1
+    # print(universal_video_url_dict)
 
+    # 2)视频关键词检索
+    universal_video_url_dict.update(keywords_to_url(keyword_dict=video_keyword_config, app_type="bilibili"))  # 检索url与合并
+    # print(universal_video_url_dict)
+
+    # 3)分集
+    for key in video_with_episode_config:
+        if key[0:2] == "BV":  # 给出BV号
+            cplt_key = "https://www.bilibili.com/video/" + key + "/"  # 用"/"标明BV号结束
+            universal_video_url_dict[cplt_key] = video_with_episode_config[key]
+        else:  # 给出url号
+            universal_video_url_dict[key] = video_with_episode_config[key]
+    # print(universal_video_url_dict)
+
+    # 二、图片url配置
     if len(picture_key_word_list) != 0:
         for key_word in picture_key_word_list:
             picture_url_list += [
@@ -207,18 +264,31 @@ if __name__ == '__main__':
             ]
 
     # 二、条件判断与获取
+    # 视频
     if main_debug_setting == 0 or main_debug_setting == 2:
-        for url in video_url_list:
-            get_video_and_html(url)
-            print("\n")
+        for url in universal_video_url_dict:
+            # 一般情况
+            if universal_video_url_dict[url] == 1:
+                get_video_and_html(url)
+            # 分集情况
+            elif universal_video_url_dict[url] > 1:
+                temp_url_list = from_set_url_get_epi_url_list(url, universal_video_url_dict[url])
+                for item in temp_url_list:
+                    get_video_and_html(item)
+            # 不合法输入
+            else:
+                print("不合法的集数\n")
         print("视频获取结束")
         print("\n\n")
 
-    if main_debug_setting == 1 or main_debug_setting == 2:
-        for url in picture_url_list:
-            get_image(url, 0)
-            print("\n")
-        print("图像获取结束")
-    else:
-        pass
+# 图片
+if main_debug_setting == 1 or main_debug_setting == 2:
+    for url in picture_url_list:
+        get_image(url, 0)
+        print("\n")
+    print("图像获取结束")
+
+# 其他debug程序
+else:
+    pass
 # end_of_main
