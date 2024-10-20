@@ -1,7 +1,9 @@
 *.html
-video_split/
+audio_file/
+video_file/
 video_result/
 picture/
 .venv/
 .idea/
-.mp3
+*.mp3
+*.wav

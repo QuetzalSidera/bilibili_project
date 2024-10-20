@@ -6,28 +6,78 @@ head = {
 }
 
 # 二、视频url配置(目前只支持bilibili)(悲
-# 1)视频url或BV号
-video_config = [  # 视频所在网址或BV号
-    # "https://www.bilibili.com/video/BV1ss41117Z8",
-    # "BV1ss41117Z8"
 
-]
+# 理论最优方法(支持AV号检索)
+# 一个用户接口：通用AV,BV号，url，关键词
+# default_number_of_videos = 2  # 默认返回检索结果的前number_of_videos个视频
+# default_mode = 0
+# mode ==-1:全流程 -2:获取音频 -3:仅获取html
+# default_episode=1 #也可以不要这个变量，默认不指定集数则只有一集
 
-# 2)关键词检索 如果遇到分集的就可能有bug
+# 与关键词检索后打印结果有关的变量
+# 1.是否最大长度限制？（防止返回的检索结果过多）
+# 2.最大长度限制的情况下，MAX_LEN常量
+# input("请输入选择的序号，输入(0)退出选择:")
+
+# (url以www或者http开头，用于字符串匹配，对三种进行区别)
+# BV号: [模式，集数]
+# url: [模式，集数]
+# 关键词: [模式，default_select?](关键词检索若遇到分集不能爬去所有集数，只能爬取第一集)
+# 关键词检索后，若default_select==0，单独打印出视频标题，通过输入序号进行选择
+# (default_select==0/1)
+
+# 默认情况的认定
+# url与BV号
+# 1.全空例：BV:[]——全默认
+# 2.半空例：BV:[-1]——指定模式(-1)，默认集数
+# 3.半空例：BV:[2]——默认模式，指定集数为2
+# 4.全满例：直接认定
+
+# 关键词
+# 1.全空例：关键词:[]——全默认
+# 2.半空例：关键词:[-1]——指定模式(-1)，默认default_select==1
+# 3.半空例：关键词:[0]——默认模式，default_select==0
+# 4.全满例：直接认定
+
+# 故障排除
+# 1.大会员专享
+# 2.限免
+# 3.分集
+# 4.特别项目(如番剧后的附加视频)
+
+# #流程
+# 1.用户输入
+# 2.url www匹配，分成两类
+# 3.转化为universal_video_url_dict
+# 4.两次遍历universal_video_url_dict，得到最终url(video_url_list)在此步进行选择
+# 5.video_url_list导入get_video_and_html中(此函数需要重构以满足需求)
+
+
+# 通用用户接口
+video_config = {
+    # url
+    "https://www.bilibili.com/video/BV1ss41117Z8": [],
+    # BVID与AVID
+    "BV1ss41117Z1": [],
+    # 关键词检索
+    "俄罗斯抽象视频": []
+}
+
+# debug_setting_variables
+# 主程序调试变量
+main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：debug程序
+
+# 关键词检索默认
+default_select = 0  # 默认直接取前几位，而非进行交互选择
+# case default_select == 0 默认模式
 default_number_of_videos = 2  # 默认返回检索结果的前number_of_videos个视频
-video_keyword_config = {
-    # "猫meme": 2,  # 0 代表按照默认值
-    # "俄罗斯抽象视频": 1,
-    # "robomaster机器人大赛": 2,
-    #  "想い出がいっぱい": 3
-}
+# case default_select == 1 交互模式
+to_select_num = -1  # 交互模式下，返回的检索结果数，to_select_num==-1则不限检索结果数，尽数打印
 
-# 3)分集视频url或BV号 (BV号采取字符串匹配，因此，url前两个字符不能是"BV")
-video_with_episode_config = {
-    # 格式 url/BV号：总集数
-    "BV1ss41117Z8": 13,
+# 通用默认
+default_mode = 0  # mode == -1:全流程(整个完整视频) -2:获取mp3 -3:获取html -4:获取画面
+default_episode_num = 1  # 也可以不要这个变量，默认不指定集数则只有一集
 
-}
 
 # 三、图片关键词与url配置
 # 图片网址或其关键词
