@@ -13,9 +13,9 @@ if __name__ == '__main__':
                     universal_video_url_dict[key] = [default_mode, default_episode_num] + universal_video_url_dict[key]
                 elif len(universal_video_url_dict[key]) == 2:  # 半空
                     if universal_video_url_dict[key][0] < 0:  # 指定了模式，默认集数
-                        universal_video_url_dict[key][0].insert(1, default_episode_num)
+                        universal_video_url_dict[key].insert(1, default_episode_num)
                     else:  # 指定了集数，默认模式
-                        universal_video_url_dict[key][0].insert(0, default_mode)
+                        universal_video_url_dict[key].insert(0, default_mode)
                 elif len(universal_video_url_dict[key]) == 3:  # 全满
                     pass
 
@@ -26,9 +26,9 @@ if __name__ == '__main__':
                         key]  # 默认模式，默认是否交互
                 elif len(universal_video_url_dict[key]) == 2:  # 半空
                     if universal_video_url_dict[key][0] < 0:  # 指定了模式，默认是否交互
-                        universal_video_url_dict[key][0].insert(1, default_select)
+                        universal_video_url_dict[key].insert(1, default_select)
                     else:  # 指定了是否交互，默认模式
-                        universal_video_url_dict[key][0].insert(0, default_mode)
+                        universal_video_url_dict[key].insert(0, default_mode)
                 elif len(universal_video_url_dict[key]) == 3:  # 全满
                     pass
             # universal_video_url_dict 标准化完成

@@ -53,18 +53,20 @@ head = {
 # 5.video_url_list导入get_video_and_html中(此函数需要重构以满足需求)
 
 
-# 通用用户接口
+# 通用用户接口，支持BV与AV号，bilibili视频网址，视频关键词检索
+# 若视频具有相同BV号，则优先级：关键词检索>BV与AV号检索=直接网址检索,后两者按照config顺序，排位后者覆盖前者
 # BV号: [模式，集数]
 # url: [模式，集数]
 # 关键词: [模式，select_enable?](关键词检索若遇到分集不能爬去所有集数，只能爬取第一集)select_enable==0不交互，select_enable==1交互
 # 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面
 video_config = {
-    # url
-    # "https://www.bilibili.com/video/BV1ss41117Z8": [],
-    # BVID与AVID
-    # "BV1ss41117Z1": [],
-    # 关键词检索
-    "想い出がいっぱい": [-1,1]
+    "https://jw.hitsz.edu.cn": [-1, 3],  # 不合法的输入 非bilibili网站网址
+    "https://www.bilibili.com": [-1, 3],  # 不合法的输入，bilibili网站网址但非bilibili视频网址
+    "https://www.bilibili.com/video/BV12F411u7my/?spm_id_from=333.999.0.0": [-1, 1],  # 网址检索
+    "BV1aj411w7qj": [-1, 1],  # BV号检索
+    "https://www.bilibili.com/video/BV1J84y1a7i1/?spm_id_from=333.999.0.0": [-2],  # 缺项用默认补全
+    "想い出がいっぱい": [-1, 0],  # 关键词检索非交互模式
+    "感情的摩天楼": [-2, 1]  # 关键词检索交互模式
 }
 
 # debug_setting_variables
@@ -81,7 +83,6 @@ to_select_num = 10  # 交互模式下，返回的检索结果数，to_select_num
 # 通用默认
 default_mode = 0  # mode == -1:全流程(整个完整视频) -2:获取mp3 -3:获取html -4:获取画面
 default_episode_num = 1  # 也可以不要这个变量，默认不指定集数则只有一集
-
 
 # 三、图片关键词与url配置
 # 图片网址或其关键词

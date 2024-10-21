@@ -50,6 +50,7 @@ def keywords_to_url(keyword, app_type, select_enable):
             for i in range(1, len(in_func_title_list) + 1):
                 title = in_func_title_list[i - 1]
                 print(str(i) + "." + title)
+            print("\n")
         else:  # 交互模式
             selected_id_list = []
             if to_select_num != -1:
