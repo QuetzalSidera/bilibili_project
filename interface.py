@@ -14,6 +14,7 @@ import re
 # identity_flag 0:BV和url 1:关键词检索
 def user_interface(config_dict):
     # 字符串匹配分离
+    print_flag = 0  # 用于优化执行界面ui如果该函数内部调用了print，最后就调用print("\n")与下一节分开
     in_func_dict = {}
     for key in config_dict:
 
@@ -57,6 +58,7 @@ def user_interface(config_dict):
                         id = "AV" + re.findall("/(AV|Av|aV|av)(([A-Z]|[a-z]|[0-9])+)", key)[0][1]
                     except IndexError:  # 未发现AV或BV号
                         print("非法的URL(不含AV或BV号):" + key)
+                        print_flag = 1
                         out_law_input_flag = 1  # 非法URL不会被包含进in_func_dict中
 
                 if out_law_input_flag == 0:
@@ -68,5 +70,6 @@ def user_interface(config_dict):
             config_dict[key].append(identity_flag)
             in_func_dict[in_func_key] = config_dict[key]
     # print(in_func_dict)
-    print("\n")
+    if print_flag == 1:
+        print("\n")
     return in_func_dict

@@ -45,13 +45,11 @@ head = {
 # 3.分集
 # 4.特别项目(如番剧后的附加视频)
 
-# #流程
-# 1.用户输入
-# 2.url www匹配，分成两类
-# 3.转化为universal_video_url_dict
-# 4.两次遍历universal_video_url_dict，得到最终url(video_url_list)在此步进行选择
-# 5.video_url_list导入get_video_and_html中(此函数需要重构以满足需求)
+# 5.重复项排除
+# 6.关键词检索获取集数，并支持选集
 
+# 7.模式与集数，select_enable变量若不合规
+# 模式默认，集数默认全选，select_enable默认
 
 # 通用用户接口，支持BV与AV号，bilibili视频网址，视频关键词检索
 # 若视频具有相同BV号，则优先级：关键词检索>BV与AV号检索=直接网址检索,后两者按照config顺序，排位后者覆盖前者
@@ -60,12 +58,12 @@ head = {
 # 关键词: [模式，select_enable?](关键词检索若遇到分集不能爬去所有集数，只能爬取第一集)select_enable==0不交互，select_enable==1交互
 # 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面
 video_config = {
-    "https://jw.hitsz.edu.cn": [-1, 3],  # 不合法的输入 非bilibili网站网址
-    "https://www.bilibili.com": [-1, 3],  # 不合法的输入，bilibili网站网址但非bilibili视频网址
-    "https://www.bilibili.com/video/BV12F411u7my/?spm_id_from=333.999.0.0": [-1, 1],  # 网址检索
-    "BV1aj411w7qj": [-1, 1],  # BV号检索
-    "https://www.bilibili.com/video/BV1J84y1a7i1/?spm_id_from=333.999.0.0": [-2],  # 缺项用默认补全
-    "想い出がいっぱい": [-1, 0],  # 关键词检索非交互模式
+    # "https://jw.hitsz.edu.cn": [-1, 3],  # 不合法的输入 非bilibili网站网址
+    # "https://www.bilibili.com": [-1, 3],  # 不合法的输入，bilibili网站网址但非bilibili视频网址
+    # "https://www.bilibili.com/video/BV12F411u7my/?spm_id_from=333.999.0.0": [-1, 1],  # 网址检索
+    # "BV1aj411w7qj": [-1, 1],  # BV号检索
+    # "https://www.bilibili.com/video/BV1J84y1a7i1/?spm_id_from=333.999.0.0": [-2],  # 缺项用默认补全
+    # "想い出がいっぱい": [-1, 1],  # 关键词检索非交互模式
     "感情的摩天楼": [-2, 1]  # 关键词检索交互模式
 }
 
@@ -89,7 +87,6 @@ default_episode_num = 1  # 也可以不要这个变量，默认不指定集数�
 picture_url_list = [  # 图片所在网址
     # "https://search.bilibili.com/all?keyword=想い出がいっぱい"
     # "https://baike.baidu.com/item/郑钦文/7679103?fromModule=lemma_search-box"
-
     # "https://baike.baidu.com/item/孤独摇滚！/56105018?fr=ge_ala",
     # "https://baike.baidu.com/item/后藤独/57098885?lemmaFrom=lemma_starMap&fromModule=lemma_starMap&starNodeId=095968e1cfeab1b823d6aa8d&lemmaIdFrom=56105018",
     # "https://baike.baidu.com/item/后藤偶/63033640?lemmaFrom=lemma_relation_starMap&fromModule=lemma_relation-starMap&lemmaIdFrom=57098885",

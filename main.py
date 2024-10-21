@@ -1,6 +1,5 @@
 from image import *
 from video import *
-main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：debug程序
 if __name__ == '__main__':
     # 一、爬取视频(音频)
     if main_debug_setting == 0 or main_debug_setting == 2:
