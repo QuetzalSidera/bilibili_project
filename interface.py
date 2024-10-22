@@ -126,19 +126,19 @@ def user_interface(config_dict):
     keyword_list = []
     for key in in_func_dict:
         if in_func_dict[key][-1] == 0:  # ID模式
-            if in_func_dict[key][0][0:2] == "ss" or in_func_dict[key][0][0:2] == "ep":  # 番剧电影ID
+            if key[0:2] == "ss" or key[0:2] == "ep":  # 番剧电影ID
                 ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", 1,
-                            in_func_dict[key][0]]]
+                             in_func_dict[key][0]]]
             else:  # 一般视频ID
                 ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", 0,
-                            in_func_dict[key][0]]]
+                             in_func_dict[key][0]]]
         if in_func_dict[key][-1] == 1:  # 关键词模式
             keyword_list += [[key, in_func_dict[key][1], in_func_dict[key][0]]]
 
     # ID_list与keyword_list格式化完成
     # ID_list 符合内核调用规范，可以直接调用 # ID索引由于不能知晓具体有多少集，因此，按照config里面配置的集数操作，没有交互界面
-    print(ID_list)
-    print(keyword_list)
+    # print(ID_list)
+    # print(keyword_list)
 
     return [ID_list, keyword_list]
 
@@ -175,12 +175,12 @@ def from_set_url_get_epi_url_list(set_url, num_of_episode):
     for i in range(1, num_of_episode + 1):
         episode_url = "https://www.bilibili.com/video/" + BVID + "/?p=" + str(i)
         in_func_list.append(episode_url)
-    print(in_func_list)
+    # print(in_func_list)
     return in_func_list
 
 
 def keywords_to_selected_list(keyword, app_type, select_enable, mode):
-    global to_select_num
+    global display_num
     in_func_id_list = []  # 添加in_func_前缀以区分，所有搜索结果id列表
     in_func_title_list = []
     if app_type == "bilibili":
@@ -199,23 +199,24 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         # print(url_list_temp)
 
         # list处理
-        # url_list_temp处理
+        # in_func_id_list处理
         # 二次匹配,并加上"https://"
         for i in range(len(in_func_id_list)):
             in_func_id_list[i] = re.findall("www.bilibili.com/video/.*?/", in_func_id_list[i])[0][23:-1]
-        # title_list_temp处理
+        # in_func_title_list处理
         # 将&amp;quot;换为"\""
         for title_id in range(len(in_func_title_list)):
             in_func_title_list[title_id] = in_func_title_list[title_id].replace("&amp;quot;", "\"")
 
-        # print(title_list_temp)
-        print(in_func_id_list)
+        # print(in_func_id_list)
+        # print(in_func_title_list)
 
         # 二、番剧电影处理
         # 1.分离番剧电影描述信息
         episode_num_list = []
         animation_and_film_id_list = []
         animation_and_film_title_list = []
+
         animation_and_film_temp_list = re.findall(
             '<a title=\".*?\" class=\"text_ellipsis\" href=\"https://www.bilibili.com/bangumi/play/.*?\" target=\"_blank\"',
             response.text)
@@ -266,18 +267,18 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
 
         else:  # 交互模式
             display_all_flag = 0  # to_select_num==-1时起作用
-            if to_select_num != -1:
+            if display_num != -1:
                 display_all_flag = 0
                 # 交互界面
-                display_id_list = in_func_id_list[0:to_select_num]
-                display_title_list = in_func_title_list[0:to_select_num]
+                display_id_list = in_func_id_list[0:display_num]
+                display_title_list = in_func_title_list[0:display_num]
 
                 in_law_index_list = list(range(1, len(display_title_list) + 1))
                 for i in range(1, len(in_law_index_list) + 1):
                     in_law_index_list[i - 1] = str(in_law_index_list[i - 1])
 
                 print("关键词检索，交互模式，" + "目前仅展示检索结果前" + str(
-                    to_select_num) + "个视频,以下是可供选择的项目:")
+                    display_num) + "个视频,以下是可供选择的项目:")
                 for i in range(1, len(display_title_list) + 1):
                     if i > len(animation_and_film_list):
                         title = "(一般视频)" + display_title_list[i - 1]
@@ -295,7 +296,7 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                     elif select_result == "all":
                         print("\n展示所有项目\n")
                         display_all_flag = 1
-                        sleep(0.5)
+                        sleep(0.6)
                         break
                     elif select_result == "delete":  # 输入delete重新选择
                         selected_id_list.clear()
@@ -304,9 +305,9 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                             "请输入您选择的视频序号,输入exit退出选择,输入delete重新选择，输入all展示所有结果:")
                     else:
                         print("非法输入")
-                        elect_result = input("请输入您选择的视频序号:")
+                        select_result = input("请输入您选择的视频序号:")
 
-            if to_select_num == -1 or display_all_flag == 1:  # 别用else 上文里面all要用这个地方
+            if display_num == -1 or display_all_flag == 1:  # 别用else 上文里面all要用这个地方
                 selected_id_list.clear()
                 display_id_list = in_func_id_list
                 display_title_list = in_func_title_list
@@ -338,7 +339,7 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                     else:
                         print("非法输入")
                         select_result = input("请输入您选择的视频序号:")
-            print("退出交互模式\n")
+            print("退出交互模式")
         # 得到 selected_id_list
 
         sleep(1)
@@ -356,18 +357,19 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                 selected_video_list.append(
                     [display_id_list[selected_index - 1], [], animation_and_film_list[temp_index][2],
                      display_title_list[selected_index - 1], 1])
-                # 格式 [[视频id,选择集数列表[],总集数，视频标题，视频类型标签(0:一般视频，1:番剧电影)],...]
-        # 得到番剧电影未选集的 selected_video_list # 格式 [[视频id,选择集数列表[],总集数，视频标题，视频类型标签(0:一般视频，1:番剧电影)],...]
+        # 得到番剧电影未选集的 selected_video_list # 目前格式 [[视频id,选择集数列表[],总集数，视频标题，视频类型标签(0:一般视频，1:番剧电影)],...]
 
         # 番剧电影选集
         if len(selected_video_list) != 0:
             selected_animation_and_film_flag = 0  # 如果选择了番剧电影，则为1
+            selected_animation_and_film_title_list = []
             for i in range(len(selected_video_list)):
                 if selected_video_list[i][-1] == 1:
                     selected_animation_and_film_flag = 1
-
+                    selected_animation_and_film_title_list.append(selected_video_list[i][3])
             if selected_animation_and_film_flag:
-                print("您选择的项目中含有番剧电影")
+                print("\n您选择的项目中含有" + str(len(selected_animation_and_film_title_list)) + "部番剧电影")
+
                 for i in range(len(selected_video_list)):
                     if selected_video_list[i][-1] == 1:
                         print("标题:" + selected_video_list[i][3])
@@ -398,16 +400,23 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                                 print("非法输入")
                                 select_result = input("请输入您选择的集数序号:")
                         if len(selected_video_list[i][1]) == 0:
-                            print("您没有选择集")
-                            selected_video_list.pop(i)  # 删除选择的番剧电影
+                            print("您没有选择集,该项目将会被移除")
                         selected_video_list[i][1] = list(set(selected_video_list[i][1]))  # 去重
                         selected_video_list[i][1].sort()  # 排序
-
+                        print("")
         # selected_video_list处理，以满足通用接口标准
+        # 删除选集为空的项目
+        iter_index_list = list(range(len(selected_video_list)))
+        iter_index_list.reverse()  # 从后向前删除，防止数组索引越位
+        for i in iter_index_list:
+            if len(selected_video_list[i][1]) == 0:
+                selected_video_list.pop(i)
+
+        # 加入mode变量
         for i in range(len(selected_video_list)):
             selected_video_list[i].append(mode)
-        print(selected_video_list)
-
+        # print(selected_video_list)
+        # 格式(内核接口标准) [[视频id(BV AV与SS EP), 选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影), 模式],...]
         # 打印选择结果
         if len(selected_video_list) != 0:
             if select_enable == 0:
@@ -416,7 +425,7 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                 print("关键词\"" + keyword + "\"检索，交互模式，以下是您选择的项目:")
             cnt = 1
             for i in range(len(selected_video_list)):
-                if selected_video_list[i][-1] == 1:
+                if selected_video_list[i][-2] == 1:
                     select_episode = ""
                     if len(selected_video_list[i][1]) == selected_video_list[i][2]:
                         select_episode = "全集"
@@ -428,13 +437,13 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                     print("\t" + str(cnt) + "." + title + select_episode)
                     cnt += 1
             for i in range(len(selected_video_list)):
-                if selected_video_list[i][-1] == 0:
+                if selected_video_list[i][-2] == 0:
                     title = "(一般视频)" + selected_video_list[i][3]
                     print("\t" + str(cnt) + "." + title)
                     cnt += 1
-            print("\n")
+            print("")
         else:
-            print("您没有选择项目")
+            print("关键词\"" + keyword + "\"检索，交互模式，您没有选择项目\n")
 
         return selected_video_list
 

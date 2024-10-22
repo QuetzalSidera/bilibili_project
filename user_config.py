@@ -11,7 +11,7 @@ head = {
 # 一个用户接口：通用AV,BV号，url，关键词
 # default_number_of_videos = 2  # 默认返回检索结果的前number_of_videos个视频
 # default_mode = 0
-# mode ==-1:全流程 -2:获取音频 -3:仅获取html
+# mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面
 # default_episode=1 #也可以不要这个变量，默认不指定集数则只有一集
 
 # 与关键词检索后打印结果有关的变量
@@ -69,7 +69,7 @@ video_config = {
     "星之梦": [-2, 1]
 }
 
-# debug_setting_variables
+# debug_setting_variables_begin
 # 主程序调试变量
 main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：debug程序
 
@@ -78,11 +78,12 @@ default_select_enable = 0  # 默认直接取前几位，而非进行交互选择
 # case default_select == 0 默认不交互模式
 default_number_of_videos = 20  # 默认返回检索结果的前number_of_videos个视频
 # case default_select == 1 交互模式
-to_select_num = 10  # 交互模式下，返回的检索结果数，to_select_num==-1则不限检索结果数，尽数打印
+display_num = 10  # 交互模式下，返回的检索结果数，display_num==-1则不限检索结果数，尽数打印
 
 # 通用默认
-default_mode = 0  # mode == -1:全流程(整个完整视频) -2:获取mp3 -3:获取html -4:获取画面
+default_mode = -1  # mode == -1:全流程(整个完整视频) -2:获取mp3 -3:获取html -4:获取画面
 default_episode_num = 1  # 也可以不要这个变量，默认不指定集数则只有一集
+# debug_setting_variables_end
 
 # 三、图片关键词与url配置
 # 图片网址或其关键词

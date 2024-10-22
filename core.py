@@ -126,5 +126,5 @@ def core_function(url, mode):
                 audio = AudioFileClip(audio_path)
                 video = video.set_audio(audio)
                 video.write_videofile("video_result/" + title + ".mp4")
-
+    print("\n")
 # end_of_get_video

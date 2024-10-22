@@ -10,13 +10,14 @@ head = {
 }
 # keyword = "test"
 # # target_url = "https://search.bilibili.com/all?keyword=" + keyword
-# target_url = "https://www.bilibili.com/bangumi/play/ep836758"
-# response = requests.get(target_url, headers=head)
-# res_text = response.text
-# print("获取html文件")
-# with open(keyword + ".html", "w", encoding="utf-8") as f:
-#     f.write(res_text)
-core_function("https://www.bilibili.com/bangumi/play/ep827835?spm_id_from=333.337.0.0&from_spmid=666.25.episode.0",-3)
+# target_url = "https://www.bilibili.com/bangumi/play/ep90842"
+target_url="https://www.bilibili.com/video/BV1Fs411i7kZ"
+response = requests.get(target_url, headers=head)
+res_text = response.text
+print("获取html文件")
+with open("test_BV_URL" + ".html", "w", encoding="utf-8") as f:
+    f.write(res_text)
+# core_function("https://www.bilibili.com/bangumi/play/ep827835?spm_id_from=333.337.0.0&from_spmid=666.25.episode.0",-3)
 #
 # animation_and_film_temp_list = re.find  all(
 #     '<a title=\".*?\" class=\"text_ellipsis\" href=\"https://www.bilibili.com/bangumi/play/.*?\" target=\"_blank\"',
@@ -85,3 +86,8 @@ core_function("https://www.bilibili.com/bangumi/play/ep827835?spm_id_from=333.33
 # print(re.findall("/(EP|Ep|eP|ep)(([A-Z]|[a-z]|[0-9])+)", url))
 # id = "ep" + re.findall("/(EP|Ep|eP|ep)(([A-Z]|[a-z]|[0-9])+)", url)[0][1]
 # print(id)
+# iter_list=list(range(10))
+# print(iter_list)
+# iter_list.pop(1)
+#
+# print(iter_list)
