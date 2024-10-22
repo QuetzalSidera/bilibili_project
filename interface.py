@@ -127,18 +127,18 @@ def user_interface(config_dict):
     for key in in_func_dict:
         if in_func_dict[key][-1] == 0:  # ID模式
             if in_func_dict[key][0][0:2] == "ss" or in_func_dict[key][0][0:2] == "ep":  # 番剧电影ID
-                ID_list += [key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", 1,
-                            in_func_dict[key][0]]
+                ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", 1,
+                            in_func_dict[key][0]]]
             else:  # 一般视频ID
-                ID_list += [key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", 0,
-                            in_func_dict[key][0]]
+                ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", 0,
+                            in_func_dict[key][0]]]
         if in_func_dict[key][-1] == 1:  # 关键词模式
-            keyword_list += [key, in_func_dict[key][1], in_func_dict[key][0]]
+            keyword_list += [[key, in_func_dict[key][1], in_func_dict[key][0]]]
 
     # ID_list与keyword_list格式化完成
     # ID_list 符合内核调用规范，可以直接调用 # ID索引由于不能知晓具体有多少集，因此，按照config里面配置的集数操作，没有交互界面
-    # print(ID_list)
-    # print(keyword_list)
+    print(ID_list)
+    print(keyword_list)
 
     return [ID_list, keyword_list]
 
@@ -245,7 +245,9 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         for i in range(len(animation_and_film_id_list)):
             animation_and_film_list.append(
                 [animation_and_film_id_list[i], animation_and_film_title_list[i], episode_num_list[i]])
-        # print(animation_and_film_dict)
+
+        # print(animation_and_film_list)
+
         animation_and_film_list.reverse()
         for video in animation_and_film_list:
             in_func_id_list.insert(0, video[0])
@@ -350,7 +352,7 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                 temp_index = 0
                 for i in range(0, len(animation_and_film_list)):
                     if video_id == animation_and_film_list[i][0]:
-                        temp = i
+                        temp_index = i
                 selected_video_list.append(
                     [display_id_list[selected_index - 1], [], animation_and_film_list[temp_index][2],
                      display_title_list[selected_index - 1], 1])
