@@ -49,22 +49,24 @@ head = {
 # 6.关键词检索获取集数，并支持选集
 
 # 7.模式与集数，select_enable变量若不合规
-# 模式默认，集数默认全选，select_enable默认
+# 模式默认，集数默认全选，select_enable默认为default_select
+# 8.搜索界面返回修正不合规的视频（如电影广告之类的））
 
 # 通用用户接口，支持BV与AV号，bilibili视频网址，视频关键词检索
 # 若视频具有相同BV号，则优先级：关键词检索>BV与AV号检索=直接网址检索,后两者按照config顺序，排位后者覆盖前者
 # BV号: [模式，集数]
 # url: [模式，集数]
 # 关键词: [模式，select_enable?](关键词检索若遇到分集不能爬去所有集数，只能爬取第一集)select_enable==0不交互，select_enable==1交互
-# 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面
+# 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面 -5:自定义
 video_config = {
-    # "https://jw.hitsz.edu.cn": [-1, 3],  # 不合法的输入 非bilibili网站网址
-    # "https://www.bilibili.com": [-1, 3],  # 不合法的输入，bilibili网站网址但非bilibili视频网址
-    # "https://www.bilibili.com/video/BV12F411u7my/?spm_id_from=333.999.0.0": [-1, 1],  # 网址检索
-    # "BV1aj411w7qj": [-1, 1],  # BV号检索
-    # "https://www.bilibili.com/video/BV1J84y1a7i1/?spm_id_from=333.999.0.0": [-2],  # 缺项用默认补全
-    # "想い出がいっぱい": [-1, 1],  # 关键词检索非交互模式
-    "感情的摩天楼": [-2, 1]  # 关键词检索交互模式
+    "https://jw.hitsz.edu.cn": [-1, 3],  # 不合法的输入 非bilibili网站网址
+    "https://www.bilibili.com": [-1, 3],  # 不合法的输入，bilibili网站网址但非bilibili视频网址
+    "https://www.bilibili.com/video/BV12F411u7my/": [-1, 1],  # 网址检索
+    "BV1aj411w7qj": [-1, 1],  # BV号检索
+    "https://www.bilibili.com/video/BV1J84y1a7i1/?spm_id_from=333.999.0.0": [-2],  # 缺项用默认补全
+    "想い出がいっぱい": [-1, 1],  # 关键词检索非交互模式
+    "感情的摩天楼": [-1, 1] , # 关键词检索交互模式
+    "星之梦": [-2, 1]
 }
 
 # debug_setting_variables
@@ -72,9 +74,9 @@ video_config = {
 main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：debug程序
 
 # 关键词检索默认
-default_select = 0  # 默认直接取前几位，而非进行交互选择
+default_select_enable = 0  # 默认直接取前几位，而非进行交互选择
 # case default_select == 0 默认不交互模式
-default_number_of_videos = 2  # 默认返回检索结果的前number_of_videos个视频
+default_number_of_videos = 20  # 默认返回检索结果的前number_of_videos个视频
 # case default_select == 1 交互模式
 to_select_num = 10  # 交互模式下，返回的检索结果数，to_select_num==-1则不限检索结果数，尽数打印
 
