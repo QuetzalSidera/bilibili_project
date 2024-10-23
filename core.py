@@ -12,26 +12,32 @@ from user_config import *
 # video:内核标准格式
 # [[视频id(BV AV与SS EP),选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影),模式],...]
 
-# 函数输入:video格式变量(列表类型):[视频id(BV AV与SS EP),选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影),模式]
+# 函数输入:video格式变量(列表类型):[视频id(BV AV与SS EP),选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影,2:分集视频，3:合集视频),模式]
 # 函数输出:无
 def set_unfold_and_commit_to_core(video):
     id = video[0]
     info = video[1:]
     # print(video)
-    if info[-2] == 0:  # 一般视频
+    if info[-2] == 0 or info[-2] == 2:  # 一般视频与分集视频
         target_url = "https://www.bilibili.com/video/" + id
         mode = info[-1]
         for episode in info[0]:
             episode_url = "https://www.bilibili.com/video/" + id + "?p=" + str(episode)
             core_function(episode_url, mode)
-    else:  # 番剧电影
+    elif info[-2] == 1:  # 番剧电影
         target_url = "https://www.bilibili.com/bangumi/play/" + id
         mode = info[-1]
         for episode in info[0]:
             base_episode_id = id[2:]
-            # 万一时是 ss0003怎么办？ 需要debug
+            # 问题:万一时是 ss0003怎么办？ 需要debug
             episode_id = id[0:2] + str(eval(base_episode_id) + episode - 1)
             episode_url = "https://www.bilibili.com/bangumi/play/" + episode_id
+            core_function(episode_url, mode)
+    else:  # 合集视频 collection
+        for collection_item_id in info[0]:
+            target_url = "https://www.bilibili.com/video/" + collection_item_id
+            episode_url = target_url
+            mode = info[-1]
             core_function(episode_url, mode)
 
 
@@ -88,7 +94,7 @@ def core_function(url, mode):
                 print("该视频为限免视频")
                 video_url = info_dict["result"]["video_info"]["dash"]["video"][0]["baseUrl"]
                 audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
-            except (JSONDecodeError,IndexError,KeyError):
+            except (JSONDecodeError, IndexError, KeyError):
                 print("该视频返回的html无法解析，已保存\"" + title + ".html\"文件")
                 with open("html_file/" + title + ".html", "w", encoding="utf-8") as f:
                     f.write(res_text)
