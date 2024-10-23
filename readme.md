@@ -179,3 +179,4 @@ target_url = "https://search.bilibili.com/all?keyword="+keyword+"&page="+page_nu
 加入简介
 读取普通视频集数
 将bilibili的html中所有有效信息提取，构建一个库
+后期工作：梳理所有视频输入方式的情况
