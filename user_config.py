@@ -40,7 +40,7 @@ video_config = {
     # "【翼をください】[请给我翅膀] EVA剧场版 破片尾曲":[-1,1]
     # "robomaster": [-1, 1]
     # "艾莉同学": [-1, 1]
-    "GBC":[-1,1]
+    "妖怪":[-1,1]
 }
 
 # bilibili_project_debug_setting_variables_begin

@@ -206,7 +206,7 @@ def standardize_ID_list(ID_list):
                         for j in range(len(file_name_list)):
                             if file_name_list[j] == "/":
                                 file_name_list[j] = "|"
-                        file_name="".join(file_name_list)
+                        file_name = "".join(file_name_list)
                         with open("html_file/" + "episode_error_" + file_name + ".html", "w") as f:
                             f.write(video_response.text)
                 else:  # 一般不分集不合集视频
@@ -301,13 +301,12 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
     # 视频类型标签(0:一般视频，1:番剧电影，2：分集视频，3:合集视频)
     if app_type == "bilibili":
         # 一、获取搜索页面html
-        print("正在bilibili搜索：\""+keyword+"\"...")
+        print("正在bilibili搜索：\"" + keyword + "\"...")
         search_url = "https://search.bilibili.com/all?keyword=" + keyword  # 转化为搜索页面网址
         response = requests.get(search_url, headers=head)
         print("得到bilibili响应，正在提取检索结果")
         # 得到response
 
-        # print(response.text)
         # with open(keyword + ".html", "w", encoding="utf-8") as f:
         #     f.write(response.text)
 
@@ -430,11 +429,15 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         animation_and_film_title_list = []  # 番剧标题 (str)
 
         animation_and_film_temp_list = re.findall(
-            '<a title=\".*?\" class=\"text_ellipsis\" href=\"https://www.bilibili.com/bangumi/play/.*?\" target=\"_blank\"',
+            '<a title=\"[^>]*?\" class=\"text_ellipsis\" href=\"https://www.bilibili.com/bangumi/play/[^>]*?\" target=\"_blank\" data-v-384b5d39>',
             response.text)
+        # print(animation_and_film_temp_list)
         for item in animation_and_film_temp_list:
-            animation_and_film_title_list += re.findall("title=\".*?\"", item)
-            animation_and_film_ssid_list += re.findall("href=\"https://www.bilibili.com/bangumi/play/.*?\"", item)
+            title_temp = re.findall("title=\".*?\"", item)
+            ssid_temp = re.findall("href=\"https://www.bilibili.com/bangumi/play/.*?\"", item)
+            if len(title_temp) and len(ssid_temp):
+                animation_and_film_title_list += title_temp
+                animation_and_film_ssid_list += ssid_temp
         episode_num_list = re.findall('</span></span><span data-v-384b5d39>(全|更新至第)(\d*)(话|集)</span></div>',
                                       response.text)
         # 得到 未处理的episode_num_list(str),animation_and_film_title_list和animation_and_film_ssid_list
@@ -454,6 +457,10 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         for i in range(len(episode_num_list)):
             episode_num_list[i] = episode_num_list[i][1]
             episode_num_list[i] = int(episode_num_list[i])
+        for i in range(len(animation_and_film_ssid_list)):
+            if animation_and_film_ssid_list[i][-12:] == "?theme=movie":  # debug的经验
+                animation_and_film_ssid_list[i] = animation_and_film_ssid_list[i][0:-12]
+                episode_num_list.insert(i, 1)
         # 得到标准的 animation_and_film_title_list,animation_and_film_ssid_list与episode_num_list
 
         # print(animation_and_film_title_list)
@@ -491,6 +498,15 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
             keyword = "".join(key_word)
             with open("html_file/" + "html_decode_error_" + keyword + ".html", "w", encoding="utf-8") as f:
                 f.write(response.text)
+
+            print(animation_and_film_title_list)
+            print(animation_and_film_epid_list)
+            print(animation_and_film_ssid_list)
+            print(episode_num_list)
+            print(len(animation_and_film_title_list))
+            print(len(animation_and_film_epid_list))
+            print(len(animation_and_film_ssid_list))
+            print(len(episode_num_list))
             # 如果解析错误就直接return
             return
         # 得到 animation_and_film_list(无需特殊处理)
