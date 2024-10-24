@@ -1,10 +1,2 @@
-audio_file/
-video_file/
-html_file/
-video_result/
-picture/
 .venv/
 .idea/
-*.mp3
-*.wav
-*.html
