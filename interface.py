@@ -20,7 +20,7 @@ from user_config import *
 # 输入:config_dit
 # 输出:内核通用接口格式
 # video_dict = []  # 最终遍历带入get_video_and_html的列表
-# {[视频id(BVAV与SSEP),选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影),模式]}
+# {[视频id(BV AV与SS EP),选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影),模式]}
 
 # 中间变量
 # in_func_dict 用于处理ID号模式和URL模式
@@ -703,8 +703,6 @@ def episode_select_interface(standard_list):
                     if standard_list[i][-2] == 3:  # 合集视频
                         target_url = "https://www.bilibili.com/video/" + standard_list[i][0]
                         video_response = requests.get(target_url, headers=head)
-                        with open("test.html", "w") as f:
-                            f.write(video_response.text)
                         collection_id_list = re.findall("data-key=\".*?\"", video_response.text)
                         collection_title_list = re.findall("<div title=\".*?\" class=\"title\">", video_response.text)
                         collection_name = re.findall("spm_id_from=.*?\" title=\".*?\" class=\"title jumpable\"",
@@ -740,7 +738,7 @@ def episode_select_interface(standard_list):
                         else:
                             max_index = len(collection_title_list)
                             limit_display = 0
-                        print("检测到" + pre_selected + "在合集\"" + collection_name + "\"中,该合集共" + str(
+                        print("检测到\"" + pre_selected + "\"在合集\"" + collection_name + "\"中,该合集共" + str(
                             standard_list[i][2]) + "集,如下,默认已选择\"" + pre_selected + "\":")
 
                         select_all_flag = 1  # 用于优化选择界面，选择全集则不打印选择的集数

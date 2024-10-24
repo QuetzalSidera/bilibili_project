@@ -29,7 +29,7 @@ def set_unfold_and_commit_to_core(video):
         mode = info[-1]
         for episode in info[0]:
             base_episode_id = id[2:]
-            # 问题:万一时是 ss0003怎么办？ 需要debug
+            # 问题:万一是 ep0003以零开头没办法处理？
             episode_id = id[0:2] + str(eval(base_episode_id) + episode - 1)
             episode_url = "https://www.bilibili.com/bangumi/play/" + episode_id
             core_function(episode_url, mode)
@@ -95,7 +95,7 @@ def core_function(url, mode):
                 video_url = info_dict["result"]["video_info"]["dash"]["video"][0]["baseUrl"]
                 audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
             except (JSONDecodeError, IndexError, KeyError):
-                print("该视频返回的html无法解析，已保存\"" + title + ".html\"文件")
+                print("该视频返回的html暂时无法解析，已保存\"" + title + ".html\"文件")
                 with open("html_file/" + title + ".html", "w", encoding="utf-8") as f:
                     f.write(res_text)
                 video_url = ""
