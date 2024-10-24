@@ -757,7 +757,7 @@ def episode_select_interface(standard_list):
                         print("检测到\"" + pre_selected + "\"在合集\"" + collection_name + "\"中,该合集共" + str(
                             standard_list[i][2]) + "集,如下,默认已选择\"" + pre_selected + "\":")
 
-                        select_all_flag = 1  # 用于优化选择界面，选择全集则不打印选择的集数
+                        select_all_flag = 0  # 用于优化选择界面，选择全集则不打印选择的集数
                         if limit_display == 1:
                             for j in range(max_index):
                                 print(str(j + 1) + "." + collection_title_list[j])

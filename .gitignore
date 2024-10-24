@@ -1,2 +1,12 @@
 .venv/
 .idea/
+audio_file/
+video_file/
+video_result/
+readme/
+picture/
+html_file/
+*.mp3
+*.mp4
+*.wav
+*.html
