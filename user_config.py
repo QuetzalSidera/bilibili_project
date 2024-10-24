@@ -67,7 +67,8 @@ video_config = {
     # "想い出がいっぱい": [-1, 1],  # 关键词检索非交互模式
     # "感情的摩天楼": [-1, 1],  # 关键词检索交互模式
     # "感情的摩天楼": [-2, 1]
-    "ss5045":[-5,100]
+    # "艾莉同学":[-1,1]
+    "幽閉サテライト/幽闭星光 《氷晶の涙》MV": [-2, 1]
 }
 
 # debug_setting_variables_begin
@@ -82,10 +83,11 @@ default_number_of_videos = 20  # 默认返回检索结果的前number_of_videos�
 display_num = 10  # 交互模式下，返回的检索结果数，display_num==-1则不限检索结果数，尽数打印
 
 # 选集默认
-select_episode_enable = 1 # 等于1时可以进入选集交互界面 0时默认取前max{default_episode_num,总集数}集
-default_episode_num = 1
+select_episode_enable = 1  # 等于1时可以进入选集交互界面 0时默认取前max{default_episode_num,总集数}集
+# case select_episode_enable == 0
+default_episode_num = 1  # select_episode_enable == 0默认选择max{default_episode_num,总集数}集
 
-# 通用默认
+# 模式默认
 default_mode = -1  # mode == -1:全流程(整个完整视频) -2:获取mp3 -3:获取html -4:获取画面
 
 # debug_setting_variables_end
