@@ -6,26 +6,6 @@ head = {
 }
 
 # 二、视频url配置(目前只支持bilibili)(悲
-
-# 理论最优方法(支持AV号检索)
-# 一个用户接口：通用AV,BV号，url，关键词
-# default_number_of_videos = 2  # 默认返回检索结果的前number_of_videos个视频
-# default_mode = 0
-# mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面
-# default_episode=1 #也可以不要这个变量，默认不指定集数则只有一集
-
-# 与关键词检索后打印结果有关的变量
-# 1.是否最大长度限制？（防止返回的检索结果过多）
-# 2.最大长度限制的情况下，MAX_LEN常量
-# input("请输入选择的序号，输入(0)退出选择:")
-
-# (url以www或者http开头，用于字符串匹配，对三种进行区别)
-# BV号: [模式，集数]
-# url: [模式，集数]
-# 关键词: [模式，default_select?](关键词检索若遇到分集不能爬去所有集数，只能爬取第一集)
-# 关键词检索后，若default_select==0，单独打印出视频标题，通过输入序号进行选择
-# (default_select==0/1)
-
 # 默认情况的认定
 # url与BV号
 # 1.全空例：BV:[]——全默认
@@ -39,24 +19,10 @@ head = {
 # 3.半空例：关键词:[0]——默认模式，default_select==0
 # 4.全满例：直接认定
 
-# 故障排除
-# 1.大会员专享
-# 2.限免
-# 3.分集
-# 4.特别项目(如番剧后的附加视频)
-
-# 5.重复项排除
-# 6.关键词检索获取集数，并支持选集
-
-# 7.模式与集数，select_enable变量若不合规
-# 模式默认，集数默认全选，select_enable默认为default_select
-# 8.搜索界面返回修正不合规的视频（如电影广告之类的））
-
 # 通用用户接口，支持BV与AV号,ss号与ep号，bilibili视频网址，视频关键词检索
-# 若视频具有相同BV号，则优先级：关键词检索>BV与AV号检索=直接网址检索,后两者按照config顺序，排位后者覆盖前者
 # BV号: [模式，集数]
 # url: [模式，集数]
-# 关键词: [模式，select_enable?](关键词检索若遇到分集不能爬去所有集数，只能爬取第一集)select_enable==0不交互，select_enable==1交互
+# 关键词: [模式，select_enable] select_enable==0自动选择检索结果交互，select_enable==1自己选择检索结果
 # 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面 -5:自定义
 video_config = {
     # "https://jw.hitsz.edu.cn": [-1, 3],  # 不合法的输入 非bilibili网站网址
@@ -67,30 +33,40 @@ video_config = {
     # "想い出がいっぱい": [-1, 1],  # 关键词检索非交互模式
     # "感情的摩天楼": [-1, 1],  # 关键词检索交互模式
     # "感情的摩天楼": [-2, 1]
-    # "艾莉同学":[-1,1]
-    "幽閉サテライト/幽闭星光 《氷晶の涙》MV": [-2, 1]
+    "BV1gx4y1G7FL": [-1, 1],
+    # "幽閉サテライト/幽闭星光 《氷晶の涙》MV": [-2, 1]
 }
 
-# debug_setting_variables_begin
+# bilibili_project_debug_setting_variables_begin
+
+# ID与url流程
+# url->统一为ID(BV,AV,ep,不含ss)->(若含有分集，合集视频，番剧电影且集数默认)选集(默认选或者在交互界面选)->爬取
+# ID(BV,AV,ep,ss)->统一为ID(BV,AV,ep,不含ss)->(若含有分集，合集视频，番剧电影且集数默认)选集(默认选或者在交互界面选)->爬取
+# 关键词流程
+# 关键词->检索得到结果->选择检索结果(默认选或在交互界面选)->(若选择了分集，合集视频，番剧电影)选集(默认选或在交互界面选)->爬取
+
 # 主程序调试变量
 main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：debug程序
 
-# 关键词检索默认
-default_select_enable = 0  # 默认直接取前几位，而非进行交互选择
-# case default_select == 0 默认不交互模式
+# 模式默认的情况下
+default_mode = -1  # mode == -1:全流程 -2:获取mp3 -3:获取html -4:获取画面 -5
+
+# 关键词select_enable默认的情况下
+default_select_enable = 0  # 默认的select_enable
+# case select_enable == 0 不进入检索交互界面
 default_number_of_videos = 20  # 默认返回检索结果的前number_of_videos个视频
-# case default_select == 1 交互模式
+# case select_enable == 1 进入检索交互界面
 display_num = 10  # 交互模式下，返回的检索结果数，display_num==-1则不限检索结果数，尽数打印
 
-# 选集默认
-select_episode_enable = 1  # 等于1时可以进入选集交互界面 0时默认取前max{default_episode_num,总集数}集
-# case select_episode_enable == 0
+# ID选集默认与关键词检索的情况下
+default_select_episode_enable = 1  # 等于0时ID，url与关键词默认取前max{default_episode_num,总集数}集；等于1时ID与url，关键词均会进入选集交互界面；等于2时ID，url默认选集但关键词进入选集交互界面
+# case default_select_episode_enable == 0
 default_episode_num = 1  # select_episode_enable == 0默认选择max{default_episode_num,总集数}集
 
-# 模式默认
-default_mode = -1  # mode == -1:全流程(整个完整视频) -2:获取mp3 -3:获取html -4:获取画面
-
-# debug_setting_variables_end
+# Moviepy 支持的格式
+audio_file_type = ".wav"  # 音频文件格式(.mp3,.wav)
+video_file_type = ".mp4"  # 完整视频文件或者画面文件格式(.mp4,.avi)
+# bilibili_project_debug_setting_variables_end
 
 # 三、图片关键词与url配置
 # 图片网址或其关键词

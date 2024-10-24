@@ -96,7 +96,7 @@ def core_function(url, mode):
                 audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
             except (JSONDecodeError, IndexError, KeyError):
                 print("该视频返回的html暂时无法解析，已保存\"" + title + ".html\"文件")
-                with open("html_file/" + title + ".html", "w", encoding="utf-8") as f:
+                with open("html_file/"+"html_decode_error_" + title + ".html", "w", encoding="utf-8") as f:
                     f.write(res_text)
                 video_url = ""
                 audio_url = ""
@@ -105,7 +105,7 @@ def core_function(url, mode):
             if mode == -1 or mode == -4:  # 全视频或画面
                 video_content = requests.get(video_url, headers=head).content
                 # print(video_url)
-                with open("video_file/" + title + ".mp4", "wb") as f:
+                with open("video_file/" + title + video_file_type, "wb") as f:
                     f.write(video_content)
                     f.close()
                     if mode == -1:
@@ -116,7 +116,7 @@ def core_function(url, mode):
             if mode == -1 or mode == -2:  # 全视频或音频
                 audio_content = requests.get(audio_url, headers=head).content
                 # print(audio_url)
-                with open("audio_file/" + title + ".wav", "wb+") as fp:
+                with open("audio_file/" + title + audio_file_type, "wb+") as fp:
                     fp.write(audio_content)
                     fp.close()
                     if mode == -1:
@@ -126,11 +126,13 @@ def core_function(url, mode):
 
             if mode == -1:
                 print("音频与画面获取结束，音画合并中\n")
-                video_path = "video_file/" + title + ".mp4"
-                audio_path = "audio_file/" + title + ".wav"
+                video_path = "video_file/" + title + video_file_type
+                audio_path = "audio_file/" + title + audio_file_type
                 video = VideoFileClip(video_path, audio=False)
                 audio = AudioFileClip(audio_path)
                 video = video.set_audio(audio)
                 video.write_videofile("video_result/" + title + ".mp4")
+    if mode == -5:
+        pass  # 自定义程序
     print("\n")
 # end_of_get_video

@@ -44,19 +44,19 @@ def user_interface(config_dict):
         if len(key) >= 2 and (key[0:2] == "BV" or key[0:2] == "Bv" or key[0:2] == "bV" or key[0:2] == "bv"):
             identity_flag = 0
             http_id_flag = 1
-            ID = key.upper()
+            ID = key[0:2].upper() + key[2:]
         elif len(key) >= 2 and (key[0:2] == "AV" or key[0:2] == "Av" or key[0:2] == "aV" or key[0:2] == "av"):
             identity_flag = 0
             http_id_flag = 1
-            ID = key.upper()
+            ID = key[0:2].upper() + key[2:]
         elif len(key) >= 2 and (key[0:2] == "SS" or key[0:2] == "Ss" or key[0:2] == "sS" or key[0:2] == "ss"):
             identity_flag = 0
             http_id_flag = 1
-            ID = key.lower()
+            ID = key[0:2].lower() + key[2:]
         elif len(key) >= 2 and (key[0:2] == "EP" or key[0:2] == "Ep" or key[0:2] == "sp" or key[0:2] == "sp"):
             identity_flag = 0
             http_id_flag = 1
-            ID = key.lower()
+            ID = key[0:2].lower() + key[2:]
         # URL
         elif len(key) >= 4 and key[0:4] == "www." or key[0:3] == "WWW.":
             identity_flag = 0
@@ -97,13 +97,13 @@ def user_interface(config_dict):
         if in_func_dict[key][-1] == 0:  # 直接给出URL
             # 以下是处理默认情况的逻辑
             if len(in_func_dict[key]) == 1:  # 全空
-                if select_episode_enable == 1:
+                if default_select_episode_enable == 0 or default_select_episode_enable == 2:
                     in_func_dict[key] = [default_mode, default_episode_num] + in_func_dict[key]
                 else:
                     in_func_dict[key] = [default_mode, "select_episode"] + in_func_dict[key]
             elif len(in_func_dict[key]) == 2:  # 半空
                 if in_func_dict[key][0] < 0:  # 指定了模式，默认集数
-                    if select_episode_enable == 1:
+                    if default_select_episode_enable == 0 or default_select_episode_enable == 2:
                         in_func_dict[key].insert(1, default_episode_num)
                     else:
                         in_func_dict[key].insert(1, "select_episode")
@@ -199,15 +199,22 @@ def standardize_ID_list(ID_list):
                         episode_num = episode_num[0][1:-1]
                         episode_num = int(episode_num)
                     else:
-                        print(ID_list[i][0] + "集数解析错误")
+                        print(ID_list[i][0] + "集数解析错误(ID或url可能不存在，已保存html文件)")
                         episode_num = 1
+                        with open("html_file/" + "episode_error_" + ID_list[i][0] + ".html", "w") as f:
+                            f.write(video_response.text)
                 else:  # 一般不分集不合集视频
                     episode_num = 1
                 if ID_list[i][2] == 1 or ID_list[i][2] == "unknown":  # BV1wZyHYSEc5 遇到的情况 动画综合，分集但无法得知集数
                     video_identity_flag = 0
-
-                title = re.findall("\"title\":\".*?\"", video_response.text)
-                title = title[0][9:-1]
+                try:
+                    title = re.findall("\"title\":\".*?\"", video_response.text)
+                    title = title[0][9:-1]
+                except IndexError:
+                    print(ID_list[i][0] + "标题解析错误(ID或url可能不存在，已保存html文件)")
+                    title = "解析错误"
+                    with open("html_file/" + "title_error_" + ID_list[i][0] + ".html", "w") as f:
+                        f.write(video_response.text)
             else:  # AV 号暂未测试
                 video_identity_flag = 0  # 视为普通视频
                 # episode_num = "unknown" #去掉unknown
@@ -535,12 +542,13 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                     print("\t" + str(i) + "." + type_tag + episode_tag + title)
                 print("")
 
-                select_result = input("请输入您选择的视频序号,输入exit退出选择,输入delete重新选择，输入all展示所有结果:")
+                select_result = input(
+                    "请输入您选择的视频序号,输入exit退出选择,输入delete重新选择，输入display all展示所有结果:")
                 while select_result != "exit":
                     if select_result in in_law_index_list:  # 排除特殊字符
                         selected_id_list.append(eval(select_result))
                         select_result = input("请输入您选择的视频序号:")
-                    elif select_result == "all":
+                    elif select_result == "display all":
                         print("\n展示所有项目\n")
                         display_all_flag = 1
                         sleep(0.6)
@@ -549,7 +557,7 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
                         selected_id_list.clear()
                         print("重新选择")
                         select_result = input(
-                            "请输入您选择的视频序号,输入exit退出选择,输入delete重新选择，输入all展示所有结果:")
+                            "请输入您选择的视频序号,输入exit退出选择,输入delete重新选择，输入display all展示所有结果:")
                     else:
                         print("非法输入")
                         select_result = input("请输入您选择的视频序号:")
@@ -640,37 +648,44 @@ def merge_list(standard_list):
 def episode_select_interface(standard_list):
     to_pop_list = []  # 选集为空将要删除的列表
     if len(standard_list):
+        cnt = 1
         print("以下是您选择的项目:")
         for i in range(len(standard_list)):  # 打印视频选择情况
             if standard_list[i][-2] == 1:
                 tag = "(番剧电影)"
-                print(tag + standard_list[i][3])
+                print("\t" + str(cnt) + "." + tag + standard_list[i][3])
+                cnt+=1
         for i in range(len(standard_list)):
             if standard_list[i][-2] == 2:
                 tag = "(分集视频)"
-                print(tag + standard_list[i][3])
+                print("\t" + str(cnt) + "." + tag + standard_list[i][3])
+                cnt += 1
         for i in range(len(standard_list)):
             if standard_list[i][-2] == 3:
                 tag = "(合集视频)"
-                print(tag + standard_list[i][3])
+                print("\t" + str(cnt) + "." + tag + standard_list[i][3])
+                cnt += 1
         for i in range(len(standard_list)):
             if standard_list[i][-2] == 0:
                 standard_list[i][1] = [1]  # 普通视频只取第一集
                 tag = "(一般视频)"
-                print(tag + standard_list[i][3])
+                print("\t" + str(cnt) + "." + tag + standard_list[i][3])
+                cnt += 1
         print("")
         sleep(1)
-        if select_episode_enable == 1:  # 交互界面选集
+        if default_select_episode_enable == 1 or default_select_episode_enable == 2:  # 交互界面选集
+            select_activated = 0
             for i in range(len(standard_list)):
                 if standard_list[i][1] == []:  # 未选集
+                    select_activated = 1
                     if standard_list[i][-2] == 1 or standard_list[i][-2] == 2:  # 番剧电影/分集视频
                         print("标题:" + standard_list[i][3])
                         print("总集数:" + str(standard_list[i][2]))
                         standard_list[i][1].clear()
                         # 合法集数列表
                         in_law_index_list = list(range(1, standard_list[i][2] + 1))
-                        for j in range(1, len(in_law_index_list) + 1):
-                            in_law_index_list[j - 1] = str(in_law_index_list[j - 1])
+                        for j in range(len(in_law_index_list)):
+                            in_law_index_list[j] = str(in_law_index_list[j])
 
                         select_result = input(
                             "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入select all选择全集:")
@@ -700,6 +715,7 @@ def episode_select_interface(standard_list):
             sleep(1)
             for i in range(len(standard_list)):
                 if standard_list[i][1] == []:  # 未选集
+                    select_activated = 1
                     if standard_list[i][-2] == 3:  # 合集视频
                         target_url = "https://www.bilibili.com/video/" + standard_list[i][0]
                         video_response = requests.get(target_url, headers=head)
@@ -749,7 +765,7 @@ def episode_select_interface(standard_list):
                             for j in range(len(in_law_index_list)):
                                 in_law_index_list[j] = str(in_law_index_list[j])
                             select_result = input(
-                                "(仅列出前20集)请输入您选择的集数序号,输入exit退出选择,输入delete重新选择,输入display all展示全集,输入select all选择展示出的全集:")
+                                "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择,输入display all展示全集,输入select all选择展示出的全集:")
                             while select_result != "exit":
                                 if select_result in in_law_index_list:  # 排除特殊字符
                                     standard_list[i][1].append(collection_id_list[eval(select_result)])
@@ -760,7 +776,7 @@ def episode_select_interface(standard_list):
                                     select_result = input(
                                         "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
                                 elif select_result == "select all":
-                                    standard_list[i][1] = collection_id_list[0:max_index + 1]
+                                    standard_list[i][1] = collection_id_list
                                     select_all_flag = 1
                                     print("选择全集")
                                     break
@@ -791,15 +807,16 @@ def episode_select_interface(standard_list):
                                     select_result = input(
                                         "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
                                 elif select_result == "select all":
-                                    standard_list[i][1] = collection_id_list[0:max_index + 1]
+                                    standard_list[i][1] = collection_id_list
                                     print("选择全集")
                                     select_all_flag = 1
                                     break
                                 else:
                                     print("非法输入")
                                     select_result = input("请输入您选择的集数序号:")
-                        standard_list[i][1].append(standard_list[i][0])  # 默认选择
+                        standard_list[i][1].append(standard_list[i][0])  # 默认选择本身
                         standard_list[i][1] = list(set(standard_list[i][1]))  # 去重
+                        standard_list[i][3] = collection_name  # 更新标题
                         print('选择结果:')
                         if select_all_flag == 0:
                             for j in range(len(standard_list[i][1])):
@@ -811,13 +828,8 @@ def episode_select_interface(standard_list):
                             print("选择全集")
                         print("")
             sleep(1)
-            print("退出选集交互界面\n")
-            for i in range(len(standard_list)):
-                if len(standard_list[i][1]) == 0:
-                    to_pop_list.append(i)
-            to_pop_list.reverse()
-            for i in to_pop_list:
-                standard_list.pop(i)
+            if select_activated == 1:
+                print("退出选集交互界面\n")
         else:  # 默认选集
             for i in range(len(standard_list)):
                 episode_num = max(default_episode_num, standard_list[i][2])
@@ -843,10 +855,20 @@ def episode_select_interface(standard_list):
                     # print(collection_title_list)
                     # print(collection_id_list)
                     # print(collection_name)
+
                     collection_info_dict = {}
-                    for i in range(len(collection_id_list)):
-                        collection_info_dict[collection_id_list[i]] = collection_title_list[i]
+                    for j in range(len(collection_id_list)):
+                        collection_info_dict[collection_id_list[j]] = collection_title_list[j]
+                    # print(collection_info_dict)
                     standard_list[i][1] = collection_id_list[0:episode_num]
+                    standard_list[i][3] = collection_name  # 更新标题
+        # 删除选集为空的项目
+        for i in range(len(standard_list)):
+            if len(standard_list[i][1]) == 0:
+                to_pop_list.append(i)
+        to_pop_list.reverse()
+        for i in to_pop_list:
+            standard_list.pop(i)
 
     return merge_list(standard_list)
 
@@ -892,3 +914,5 @@ def display_result(standard_list):
                 print("\t" + str(cnt) + "." + tag + standard_list[i][3])
                 cnt += 1
         print("")
+    else:
+        print("您没有选择任何项目")
