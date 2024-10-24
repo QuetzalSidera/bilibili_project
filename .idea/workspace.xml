@@ -9,12 +9,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="20a78475-a8cc-45d2-a000-7bf9fa9dd38e" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/检索交互界面，不完全打印窗口.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/程序流程框图.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/项目结构.png" beforeDir="false" />
-    </list>
+    <list default="true" id="20a78475-a8cc-45d2-a000-7bf9fa9dd38e" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -271,6 +266,7 @@
       <workItem from="1729690023638" duration="45973000" />
       <workItem from="1729767368225" duration="16571000" />
       <workItem from="1729784816824" duration="485000" />
+      <workItem from="1729785504116" duration="320000" />
     </task>
     <servers />
   </component>
