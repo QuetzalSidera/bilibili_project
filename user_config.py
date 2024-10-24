@@ -81,9 +81,13 @@ default_number_of_videos = 20  # 默认返回检索结果的前number_of_videos�
 # case default_select == 1 交互模式
 display_num = 10  # 交互模式下，返回的检索结果数，display_num==-1则不限检索结果数，尽数打印
 
+# 选集默认
+select_episode_enable = 1 # 等于1时可以进入选集交互界面 0时默认取前max{default_episode_num,总集数}集
+default_episode_num = 1
+
 # 通用默认
 default_mode = -1  # mode == -1:全流程(整个完整视频) -2:获取mp3 -3:获取html -4:获取画面
-default_episode_num = 1  # 也可以不要这个变量，默认不指定集数则只有一集
+
 # debug_setting_variables_end
 
 # 三、图片关键词与url配置

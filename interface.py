@@ -40,18 +40,23 @@ def user_interface(config_dict):
 
         # 1.字符串匹配确定identity_flag
         # ID
+        ID = ""
         if len(key) >= 2 and (key[0:2] == "BV" or key[0:2] == "Bv" or key[0:2] == "bV" or key[0:2] == "bv"):
             identity_flag = 0
             http_id_flag = 1
+            ID = key.upper()
         elif len(key) >= 2 and (key[0:2] == "AV" or key[0:2] == "Av" or key[0:2] == "aV" or key[0:2] == "av"):
             identity_flag = 0
             http_id_flag = 1
+            ID = key.upper()
         elif len(key) >= 2 and (key[0:2] == "SS" or key[0:2] == "Ss" or key[0:2] == "sS" or key[0:2] == "ss"):
             identity_flag = 0
             http_id_flag = 1
+            ID = key.lower()
         elif len(key) >= 2 and (key[0:2] == "EP" or key[0:2] == "Ep" or key[0:2] == "sp" or key[0:2] == "sp"):
             identity_flag = 0
             http_id_flag = 1
+            ID = key.lower()
         # URL
         elif len(key) >= 4 and key[0:4] == "www." or key[0:3] == "WWW.":
             identity_flag = 0
@@ -67,9 +72,7 @@ def user_interface(config_dict):
 
         # 2.从config_dict得到in_func_dict,如果是BV号则换成url
         if identity_flag == 0:  # ID与http
-            ID = ""
             if http_id_flag:  # ID
-                ID = key
                 config_dict[key].append(identity_flag)
                 in_func_dict[ID] = config_dict[key]
             else:  # http
@@ -83,20 +86,27 @@ def user_interface(config_dict):
                     in_func_dict[ID] = config_dict[key]
 
         else:  # 关键词检索
-            keyword = key
-            config_dict[key].append(identity_flag)
-            in_func_dict[keyword] = config_dict[key]
-
+            if len(key):
+                keyword = key
+                config_dict[key].append(identity_flag)
+                in_func_dict[keyword] = config_dict[key]
+    # 1.排除空输入与非法url，BV AV换成大写，ss ep换成消小写
     # 补充默认项
     for key in in_func_dict:
         # 由于补充了identity_flag，因此全空：长度1，半空：长度2，全满：长度3
         if in_func_dict[key][-1] == 0:  # 直接给出URL
             # 以下是处理默认情况的逻辑
             if len(in_func_dict[key]) == 1:  # 全空
-                in_func_dict[key] = [default_mode, default_episode_num] + in_func_dict[key]
+                if select_episode_enable == 1:
+                    in_func_dict[key] = [default_mode, default_episode_num] + in_func_dict[key]
+                else:
+                    in_func_dict[key] = [default_mode, "select_episode"] + in_func_dict[key]
             elif len(in_func_dict[key]) == 2:  # 半空
                 if in_func_dict[key][0] < 0:  # 指定了模式，默认集数
-                    in_func_dict[key].insert(1, default_episode_num)
+                    if select_episode_enable == 1:
+                        in_func_dict[key].insert(1, default_episode_num)
+                    else:
+                        in_func_dict[key].insert(1, "select_episode")
                 else:  # 指定了集数，默认模式
                     in_func_dict[key].insert(0, default_mode)
             elif len(in_func_dict[key]) == 3:  # 全满
@@ -120,18 +130,24 @@ def user_interface(config_dict):
     # 格式 key:[mode,episode/select_enable?,identity_flag]
 
     # key 关键词，ID
-    # ID_list 目标格式 [[视频id(BVAV与SSEP)/关键词, 选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影,2:分集视频，3:合集视频), 模式],...]
+    # ID_list 目标格式 [[视频id(BV AV与ss ep), 选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影,2:分集视频，3:合集视频), 模式],...]
     # keyword_list 目标格式 [[key,select_enable,mode],...]
     ID_list = []
     keyword_list = []
     for key in in_func_dict:
         if in_func_dict[key][-1] == 0:  # ID模式
             if key[0:2] == "ss" or key[0:2] == "ep":  # 番剧电影ID
-                ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", 1,
-                             in_func_dict[key][0]]]
+                if in_func_dict[key][1] != "select_episode":
+                    ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", 1,
+                                 in_func_dict[key][0]]]
+                else:  # 暂不选集
+                    ID_list += [[key, [], "unknown", "unknown", 1, in_func_dict[key][0]]]
             else:  # 一般视频ID
-                ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", "unknown",
-                             in_func_dict[key][0]]]
+                if in_func_dict[key][1] != "select_episode":
+                    ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", "unknown",
+                                 in_func_dict[key][0]]]
+                else:
+                    ID_list += [[key, [], "unknown", "unknown", "unknown", in_func_dict[key][0]]]
         if in_func_dict[key][-1] == 1:  # 关键词模式
             keyword_list += [[key, in_func_dict[key][1], in_func_dict[key][0]]]
 
@@ -644,46 +660,163 @@ def episode_select_interface(standard_list):
                 print(tag + standard_list[i][3])
         print("")
         sleep(1)
-        for i in range(len(standard_list)):
-            if standard_list[i][1] == []:  # 未选集
-                if standard_list[i][-2] == 1 or standard_list[i][-2] == 2:  # 番剧电影/分集视频
-                    print("标题:" + standard_list[i][3])
-                    print("总集数:" + str(standard_list[i][2]))
-                    standard_list[i][1].clear()
-                    # 合法集数列表
-                    in_law_index_list = list(range(1, standard_list[i][2] + 1))
-                    for j in range(1, len(in_law_index_list) + 1):
-                        in_law_index_list[j - 1] = str(in_law_index_list[j - 1])
+        if select_episode_enable == 1:  # 交互界面选集
+            for i in range(len(standard_list)):
+                if standard_list[i][1] == []:  # 未选集
+                    if standard_list[i][-2] == 1 or standard_list[i][-2] == 2:  # 番剧电影/分集视频
+                        print("标题:" + standard_list[i][3])
+                        print("总集数:" + str(standard_list[i][2]))
+                        standard_list[i][1].clear()
+                        # 合法集数列表
+                        in_law_index_list = list(range(1, standard_list[i][2] + 1))
+                        for j in range(1, len(in_law_index_list) + 1):
+                            in_law_index_list[j - 1] = str(in_law_index_list[j - 1])
 
-                    select_result = input(
-                        "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
-                    while select_result != "exit":
-                        if select_result in in_law_index_list:  # 排除特殊字符
-                            standard_list[i][1].append(eval(select_result))
-                            select_result = input("请输入您选择的集数序号:")
-                        elif select_result == "delete":
-                            standard_list[i][1].clear()
-                            print("重新选择")
-                            select_result = input(
-                                "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
-                        elif select_result == "all":
-                            for j in range(1, standard_list[i][2] + 1):
-                                standard_list[i][1].append(j)
-                            print("选择全集")
-                            break
+                        select_result = input(
+                            "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
+                        while select_result != "exit":
+                            if select_result in in_law_index_list:  # 排除特殊字符
+                                standard_list[i][1].append(eval(select_result))
+                                select_result = input("请输入您选择的集数序号:")
+                            elif select_result == "delete":
+                                standard_list[i][1].clear()
+                                print("重新选择")
+                                select_result = input(
+                                    "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
+                            elif select_result == "all":
+                                for j in range(1, standard_list[i][2] + 1):
+                                    standard_list[i][1].append(j)
+                                print("选择全集")
+                                break
+                            else:
+                                print("非法输入")
+                                select_result = input("请输入您选择的集数序号:")
+                        if len(standard_list[i][1]) == 0:
+                            print("您没有选择集,该项目将会被移除")
+                        standard_list[i][1] = list(set(standard_list[i][1]))  # 去重
+                        standard_list[i][1].sort()  # 排序
+                        print("")
+
+            sleep(1)
+            for i in range(len(standard_list)):
+                if standard_list[i][1] == []:  # 未选集
+                    if standard_list[i][-2] == 3:  # 合集视频
+                        target_url = "https://www.bilibili.com/video/" + standard_list[i][0]
+                        video_response = requests.get(target_url, headers=head)
+                        collection_id_list = re.findall("data-key=\".*?\"", video_response.text)
+                        collection_title_list = re.findall(
+                            "<div class=\"simple-base-item normal\"><div title=\".*?\" class=\"title\">",
+                            video_response.text)
+                        collection_name = re.findall("spm_id_from=.*?\" title=\".*?\" class=\"title jumpable\"",
+                                                     video_response.text)
+                        collection_name = re.findall("title=\".*?\"", collection_name[0])
+
+                        for j in range(len(collection_id_list)):
+                            collection_id_list[j] = collection_id_list[j][10:-1]
+                        for j in range(len(collection_title_list)):
+                            collection_title_list[j] = collection_title_list[j][49:-16]
+                        collection_name = collection_name[0][7:-1]
+
+                        # print(collection_title_list)
+                        # print(collection_id_list)
+                        # print(collection_name)
+                        collection_info_dict = {}
+                        for i in range(len(collection_id_list)):
+                            collection_info_dict[collection_id_list[i]] = collection_title_list[i]
+                        # print(collection_info_dict)
+                        # 找到已选定的项目标题，否则打印ID
+                        pre_selected = standard_list[i][0]
+                        try:
+                            pre_selected = collection_info_dict[pre_selected]
+                        except KeyError:
+                            pre_selected = standard_list[i][0]
+                        limit_display = 0  # 集数过多，限制打印项目时为1
+                        if len(collection_title_list) > 20:
+                            max_index = 20
+                            limit_display = 1
                         else:
-                            print("非法输入")
-                            select_result = input("请输入您选择的集数序号:")
-                    if len(standard_list[i][1]) == 0:
-                        print("您没有选择集,该项目将会被移除")
-                    standard_list[i][1] = list(set(standard_list[i][1]))  # 去重
-                    standard_list[i][1].sort()  # 排序
-                    print("")
+                            max_index = len(collection_title_list)
+                            limit_display = 0
+                        print("检测到" + pre_selected + "在合集\"" + collection_name + "\"中,该合集共" + str(
+                            standard_list[i][2]) + "集,如下,默认已选择\"" + pre_selected + "\":")
 
-        sleep(1)
-        for i in range(len(standard_list)):
-            if standard_list[i][1] == []:  # 未选集
-                if standard_list[i][-2] == 3:  # 合集视频
+                        if limit_display == 1:
+                            for j in range(max_index):
+                                print(str(j + 1) + "." + collection_title_list[j])
+                            in_law_index_list = list(range(1, max_index + 1))
+                            for j in range(len(in_law_index_list)):
+                                in_law_index_list[j] = str(in_law_index_list[j])
+                            select_result = input(
+                                "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择,输入display_all展示全集,输入select all选择展示出的全集:")
+                            while select_result != "exit":
+                                if select_result in in_law_index_list:  # 排除特殊字符
+                                    standard_list[i][1].append(collection_id_list[eval(select_result)])
+                                    select_result = input("请输入您选择的集数序号:")
+                                elif select_result == "delete":
+                                    standard_list[i][1].clear()
+                                    print("重新选择")
+                                    select_result = input(
+                                        "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
+                                elif select_result == "select all":
+                                    standard_list[i][1] = collection_id_list[0:max_index + 1]
+                                    print("选择全集")
+                                    break
+                                elif select_result == "display all":
+                                    standard_list[i][1].clear()
+                                    print("\n展示所有项目\n")
+                                    max_index = len(collection_title_list)
+                                    limit_display = 0
+                                    break
+                                else:
+                                    print("非法输入")
+                                    select_result = input("请输入您选择的集数序号:")
+                        if limit_display == 0:
+                            for j in range(max_index):
+                                print(str(j + 1) + "." + collection_title_list[j])
+                            in_law_index_list = list(range(1, max_index + 1))
+                            for j in range(len(in_law_index_list)):
+                                in_law_index_list[j] = str(in_law_index_list[j])
+                            select_result = input(
+                                "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择,输入select all选择全集:")
+                            while select_result != "exit":
+                                if select_result in in_law_index_list:  # 排除特殊字符
+                                    standard_list[i][1].append(collection_id_list[eval(select_result)])
+                                    select_result = input("请输入您选择的集数序号:")
+                                elif select_result == "delete":
+                                    standard_list[i][1].clear()
+                                    print("重新选择")
+                                    select_result = input(
+                                        "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
+                                elif select_result == "select all":
+                                    standard_list[i][1] = collection_id_list[0:max_index + 1]
+                                    print("选择全集")
+                                    break
+                                else:
+                                    print("非法输入")
+                                    select_result = input("请输入您选择的集数序号:")
+                        standard_list[i][1].append(standard_list[i][0])  # 默认选择
+                        standard_list[i][1] = list(set(standard_list[i][1]))  # 去重
+                        print('选择结果:')
+                        for j in range(len(standard_list[i][1])):
+                            try:
+                                print(str(j + 1) + "." + collection_info_dict[standard_list[i][1][j]])
+                            except KeyError:
+                                print(str(j + 1) + "." + standard_list[i][1][j])
+                        print("")
+            sleep(1)
+            print("退出选集交互界面\n")
+            for i in range(len(standard_list)):
+                if len(standard_list[i][1]) == 0:
+                    to_pop_list.append(i)
+            to_pop_list.reverse()
+            for i in to_pop_list:
+                standard_list.pop(i)
+        else:  # 默认选集
+            for i in range(len(standard_list)):
+                episode_num = max(default_episode_num, standard_list[i][2])
+                if standard_list[i][-2] == 1 or standard_list[i][-2] == 2:  # 番剧电影/分集视频
+                    standard_list[i][1] = list(range(1, episode_num + 1))
+                elif standard_list[i][-2] == 3:  # 合集视频
                     target_url = "https://www.bilibili.com/video/" + standard_list[i][0]
                     video_response = requests.get(target_url, headers=head)
                     collection_id_list = re.findall("data-key=\".*?\"", video_response.text)
@@ -706,94 +839,8 @@ def episode_select_interface(standard_list):
                     collection_info_dict = {}
                     for i in range(len(collection_id_list)):
                         collection_info_dict[collection_id_list[i]] = collection_title_list[i]
-                    # print(collection_info_dict)
-                    # 找到已选定的项目标题，否则打印ID
-                    pre_selected = standard_list[i][0]
-                    try:
-                        pre_selected = collection_info_dict[pre_selected]
-                    except KeyError:
-                        pre_selected = standard_list[i][0]
-                    limit_display = 0  # 集数过多，限制打印项目时为1
-                    if len(collection_title_list) > 20:
-                        max_index = 20
-                        limit_display = 1
-                    else:
-                        max_index = len(collection_title_list)
-                        limit_display = 0
-                    print("检测到" + pre_selected + "在合集\"" + collection_name + "\"中,该合集共" + str(
-                        standard_list[i][2]) + "集,如下,默认已选择\"" + pre_selected + "\":")
+                    standard_list[i][1] = collection_id_list[0:episode_num]
 
-                    if limit_display == 1:
-                        for j in range(max_index):
-                            print(str(j + 1) + "." + collection_title_list[j])
-                        in_law_index_list = list(range(1, max_index + 1))
-                        for j in range(len(in_law_index_list)):
-                            in_law_index_list[j] = str(in_law_index_list[j])
-                        select_result = input(
-                            "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择,输入display_all展示全集,输入select all选择展示出的全集:")
-                        while select_result != "exit":
-                            if select_result in in_law_index_list:  # 排除特殊字符
-                                standard_list[i][1].append(collection_id_list[eval(select_result)])
-                                select_result = input("请输入您选择的集数序号:")
-                            elif select_result == "delete":
-                                standard_list[i][1].clear()
-                                print("重新选择")
-                                select_result = input(
-                                    "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
-                            elif select_result == "select all":
-                                standard_list[i][1] = collection_id_list[0:max_index + 1]
-                                print("选择全集")
-                                break
-                            elif select_result == "display all":
-                                standard_list[i][1].clear()
-                                print("\n展示所有项目\n")
-                                max_index = len(collection_title_list)
-                                limit_display = 0
-                                break
-                            else:
-                                print("非法输入")
-                                select_result = input("请输入您选择的集数序号:")
-                    if limit_display == 0:
-                        for j in range(max_index):
-                            print(str(j + 1) + "." + collection_title_list[j])
-                        in_law_index_list = list(range(1, max_index + 1))
-                        for j in range(len(in_law_index_list)):
-                            in_law_index_list[j] = str(in_law_index_list[j])
-                        select_result = input(
-                            "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择,输入select all选择全集:")
-                        while select_result != "exit":
-                            if select_result in in_law_index_list:  # 排除特殊字符
-                                standard_list[i][1].append(collection_id_list[eval(select_result)])
-                                select_result = input("请输入您选择的集数序号:")
-                            elif select_result == "delete":
-                                standard_list[i][1].clear()
-                                print("重新选择")
-                                select_result = input(
-                                    "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入all选择全集:")
-                            elif select_result == "select all":
-                                standard_list[i][1] = collection_id_list[0:max_index + 1]
-                                print("选择全集")
-                                break
-                            else:
-                                print("非法输入")
-                                select_result = input("请输入您选择的集数序号:")
-                    standard_list[i][1].append(standard_list[i][0])  # 默认选择
-                    standard_list[i][1] = list(set(standard_list[i][1]))  # 去重
-                    print('选择结果:')
-                    for j in range(len(standard_list[i][1])):
-                        try:
-                            print(str(j + 1) + "." + collection_info_dict[standard_list[i][1][j]])
-                        except KeyError:
-                            print(str(j + 1) + "." + standard_list[i][1][j])
-                    print("")
-        sleep(1)
-        print("退出选集交互界面\n")
-        for i in range(len(standard_list)):
-            if len(standard_list[i][1]) == 0:
-                to_pop_list.append(i)
-        to_pop_list.reverse()
-        for i in to_pop_list:
-            standard_list.pop(i)
     return merge_list(standard_list)
 
 
