@@ -201,7 +201,13 @@ def standardize_ID_list(ID_list):
                     else:
                         print(ID_list[i][0] + "集数解析错误(ID或url可能不存在，已保存html文件)")
                         episode_num = 1
-                        with open("html_file/" + "episode_error_" + ID_list[i][0] + ".html", "w") as f:
+                        file_name = ID_list[i][0]
+                        file_name_list = list(file_name)
+                        for j in range(len(file_name_list)):
+                            if file_name_list[j] == "/":
+                                file_name_list[j] = "|"
+                        file_name="".join(file_name_list)
+                        with open("html_file/" + "episode_error_" + file_name + ".html", "w") as f:
                             f.write(video_response.text)
                 else:  # 一般不分集不合集视频
                     episode_num = 1
@@ -213,7 +219,13 @@ def standardize_ID_list(ID_list):
                 except IndexError:
                     print(ID_list[i][0] + "标题解析错误(ID或url可能不存在，已保存html文件)")
                     title = "解析错误"
-                    with open("html_file/" + "title_error_" + ID_list[i][0] + ".html", "w") as f:
+                    file_name = ID_list[i][0]
+                    file_name_list = list(file_name)
+                    for j in range(len(file_name_list)):
+                        if file_name_list[j] == "/":
+                            file_name_list[j] = "|"
+                    file_name = "".join(file_name_list)
+                    with open("html_file/" + "title_error_" + file_name + ".html", "w") as f:
                         f.write(video_response.text)
             else:  # AV 号暂未测试
                 video_identity_flag = 0  # 视为普通视频
@@ -289,8 +301,10 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
     # 视频类型标签(0:一般视频，1:番剧电影，2：分集视频，3:合集视频)
     if app_type == "bilibili":
         # 一、获取搜索页面html
+        print("正在bilibili搜索：\""+keyword+"\"...")
         search_url = "https://search.bilibili.com/all?keyword=" + keyword  # 转化为搜索页面网址
         response = requests.get(search_url, headers=head)
+        print("得到bilibili响应，正在提取检索结果")
         # 得到response
 
         # print(response.text)
@@ -407,7 +421,7 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         # 得到含普通视频的in_func_title_list与in_func_id_list
         # print(in_func_title_list)
         # print(in_func_id_list)
-
+        print("普通视频信息提取结束")
         # 2)番剧电影信息提取
         # 1.分离番剧电影描述信息
         episode_num_list = []  # 番剧电影总集数 (int)
@@ -421,7 +435,8 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         for item in animation_and_film_temp_list:
             animation_and_film_title_list += re.findall("title=\".*?\"", item)
             animation_and_film_ssid_list += re.findall("href=\"https://www.bilibili.com/bangumi/play/.*?\"", item)
-        episode_num_list = re.findall('</span></span><span data-v-384b5d39>全(\d*)话</span></div>', response.text)
+        episode_num_list = re.findall('</span></span><span data-v-384b5d39>(全|更新至第)(\d*)(话|集)</span></div>',
+                                      response.text)
         # 得到 未处理的episode_num_list(str),animation_and_film_title_list和animation_and_film_ssid_list
 
         # print(animation_and_film_temp_list) #临时list
@@ -437,6 +452,7 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         for i in range(len(animation_and_film_ssid_list)):
             animation_and_film_ssid_list[i] = animation_and_film_ssid_list[i][44:-1]
         for i in range(len(episode_num_list)):
+            episode_num_list[i] = episode_num_list[i][1]
             episode_num_list[i] = int(episode_num_list[i])
         # 得到标准的 animation_and_film_title_list,animation_and_film_ssid_list与episode_num_list
 
@@ -462,9 +478,21 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         animation_and_film_list = []
         # 格式 [[ep号,标题，集数],[ep号,标题，集数],[ep号,标题，集数].....]
         # 番剧电影url："https://www.bilibili.com/bangumi/play/"+ep号(第一集)+集数-1
-        for i in range(len(animation_and_film_epid_list)):
-            animation_and_film_list.append(
-                [animation_and_film_epid_list[i], animation_and_film_title_list[i], episode_num_list[i]])
+        try:
+            for i in range(len(animation_and_film_epid_list)):
+                animation_and_film_list.append(
+                    [animation_and_film_epid_list[i], animation_and_film_title_list[i], episode_num_list[i]])
+        except IndexError:
+            print("关键词：\"" + keyword + "\"搜索结果html解析错误，已保存html文件")
+            key_word = list(keyword)
+            for i in range(len(key_word)):  # 将“/”转换为“｜”防止打开文件时报错
+                if key_word[i] == "/":
+                    key_word[i] = "|"  # 防止误识别成文件路径
+            keyword = "".join(key_word)
+            with open("html_file/" + "html_decode_error_" + keyword + ".html", "w", encoding="utf-8") as f:
+                f.write(response.text)
+            # 如果解析错误就直接return
+            return
         # 得到 animation_and_film_list(无需特殊处理)
         # print(animation_and_film_list)
 
@@ -477,7 +505,7 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         # 得到含番剧电影的in_func_title_list与in_func_id_list
         # print(in_func_title_list)
         # print(in_func_id_list)
-
+        print("番剧电影信息提取结束")
         # 3)合并番剧电影与视频描述信息
         # video_list格式 [[id号(BV),标题,集数,这是第..集，视频类型标签],[id号(BV),标题，集数,这是第..集，视频类型标签],[id号(BV),标题，集数,这是第..集，视频类型标签].....]
         # animation_and_film_list格式 [[ep号,标题，集数],[ep号,标题，集数],[ep号,标题，集数].....]
@@ -491,6 +519,7 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
         # print(in_func_title_list)
         # print(in_func_id_list)
         # print(info_list)
+        print("检索结果提取完毕")
 
         # 三、选择与交互界面
         display_id_list = []
@@ -654,7 +683,7 @@ def episode_select_interface(standard_list):
             if standard_list[i][-2] == 1:
                 tag = "(番剧电影)"
                 print("\t" + str(cnt) + "." + tag + standard_list[i][3])
-                cnt+=1
+                cnt += 1
         for i in range(len(standard_list)):
             if standard_list[i][-2] == 2:
                 tag = "(分集视频)"

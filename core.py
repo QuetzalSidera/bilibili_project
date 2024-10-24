@@ -55,8 +55,8 @@ def core_function(url, mode):
     # 从html中获取的视频名称示例：【东方编曲集】感情的摩天楼　～ Cosmic Mind_哔哩哔哩_bilibili
     title_list = list(title)
     for i in range(len(title_list)):  # 将“/”转换为“｜”防止打开文件时报错
-        if title_list[i - 1] == "/":
-            title_list[i - 1] = "|"
+        if title_list[i] == "/":
+            title_list[i] = "|"
     title_list = title_list[0:-14]  # 删去最后的"_哔哩哔哩_bilibili"
     title = "".join(title_list)
     print("视频名称：" + title)
