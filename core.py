@@ -17,7 +17,7 @@ from user_config import *
 def set_unfold_and_commit_to_core(video):
     id = video[0]
     info = video[1:]
-    error_code=""
+    error_code = ""
     # print(video)
     if info[-2] == 0 or info[-2] == 2:  # 一般视频与分集视频
         target_url = "https://www.bilibili.com/video/" + id
@@ -51,6 +51,9 @@ def core_function(url, mode):
     response = requests.get(url, headers=head)
     res_text = response.text
     soup = BeautifulSoup(res_text, 'lxml')
+    with open("test.html", "w") as f:
+        f.write(response.text)
+        f.close()
 
     # 二、解析html文件
     # 1.获取标题(修正标题以避免误识别成文件路径，防止标题过长导致文件输出出错)
@@ -99,8 +102,20 @@ def core_function(url, mode):
                 # print(info_dict)
                 # print("html解码方式二(except)")
                 print("该视频为(免费/限免)番剧电影")
-                video_url = info_dict["result"]["video_info"]["dash"]["video"][0]["baseUrl"]
-                audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
+                video_index = 0
+                audio_index = 0
+                video_size = 0
+                audio_size = 0
+                for i in range(len(info_dict["result"]["video_info"]["dash"]["video"])):
+                    if info_dict["result"]["video_info"]["dash"]["video"][i]["size"] > video_size:
+                        video_size = info_dict["result"]["video_info"]["dash"]["video"][i]["size"]
+                        video_index = i
+                for i in range(len(info_dict["result"]["video_info"]["dash"]["audio"])):
+                    if info_dict["result"]["video_info"]["dash"]['audio'][i]["size"] > audio_size:
+                        audio_size = info_dict["result"]["video_info"]["dash"]['audio'][i]["size"]
+                        audio_index = i
+                video_url = info_dict["result"]["video_info"]["dash"]["video"][video_index]["baseUrl"]
+                audio_url = info_dict["result"]["video_info"]["dash"]['audio'][audio_index]["baseUrl"]
             except (JSONDecodeError, IndexError, KeyError):
                 try:
                     base_info = "".join(tree.xpath("/html/head/script[4]/text()"))
