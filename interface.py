@@ -53,7 +53,7 @@ def user_interface(config_dict):
             identity_flag = 0
             http_id_flag = 1
             ID = key[0:2].lower() + key[2:]
-        elif len(key) >= 2 and (key[0:2] == "EP" or key[0:2] == "Ep" or key[0:2] == "sp" or key[0:2] == "sp"):
+        elif len(key) >= 2 and (key[0:2] == "EP" or key[0:2] == "Ep" or key[0:2] == "eP" or key[0:2] == "ep"):
             identity_flag = 0
             http_id_flag = 1
             ID = key[0:2].lower() + key[2:]
@@ -166,10 +166,12 @@ def standardize_ID_list(ID_list):
             target_url = "https://www.bilibili.com/bangumi/play/" + ID_list[i][0]
             video_response = requests.get(target_url, headers=head)
 
-            # with open("test" + ".html", "w") as f:
-            #     f.write(video_response.text)
-            episode_num = re.findall("全\d*?话", video_response.text)
-            episode_num = episode_num[0][1:-1]
+            with open("test" + ".html", "w") as f:
+                f.write(video_response.text)
+                f.close()
+            episode_num = re.findall("(全|更新至第)(\d{1,})(话|集)", video_response.text)
+            print(episode_num)
+            episode_num = episode_num[0][1]
             episode_num = eval(episode_num)
             title = re.findall("<meta property=\"og:title\" content=\".*?\"/>", video_response.text)
             title = title[0][35:-3]
