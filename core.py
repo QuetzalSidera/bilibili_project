@@ -121,25 +121,32 @@ def core_function(url, mode):
                     print("造成此结果的原因可能是 1.视频为充电粉丝专享 2.网络问题 3.访问的视频不存在")
         if error_code == "null":
             if mode == -1 or mode == -4:  # 全视频或画面
-                video_content = requests.get(video_url, headers=head).content
-                with open("video_file/" + title + video_file_type, "wb") as f:
-                    f.write(video_content)
-                    f.close()
-                    if mode == -1:
-                        print("获取整个视频，画面已获取成功")
-                    else:
-                        print("仅获取画面，画面获取成功")
-
+                try:
+                    video_content = requests.get(video_url, headers=head).content
+                    with open("video_file/" + title + video_file_type, "wb") as f:
+                        f.write(video_content)
+                        f.close()
+                        if mode == -1:
+                            print("获取整个视频，画面已获取成功")
+                        else:
+                            print("仅获取画面，画面获取成功")
+                except requests.exceptions.ChunkedEncodingError:
+                    print("网络连接不稳定，获取失败")
+                    return
             if mode == -1 or mode == -2:  # 全视频或音频
-                audio_content = requests.get(audio_url, headers=head).content
-                # print(audio_url)
-                with open("audio_file/" + title + audio_file_type, "wb+") as fp:
-                    fp.write(audio_content)
-                    fp.close()
-                    if mode == -1:
-                        print("获取整个视频，音频已获取成功")
-                    else:
-                        print("仅获取音频，音频获取成功")
+                try:
+                    audio_content = requests.get(audio_url, headers=head).content
+                    # print(audio_url)
+                    with open("audio_file/" + title + audio_file_type, "wb+") as fp:
+                        fp.write(audio_content)
+                        fp.close()
+                        if mode == -1:
+                            print("获取整个视频，音频已获取成功")
+                        else:
+                            print("仅获取音频，音频获取成功")
+                except requests.exceptions.ChunkedEncodingError:
+                    print("网络连接不稳定，获取失败")
+                    return
 
             if mode == -1:
                 print("音频与画面获取结束，音画合并中\n")
