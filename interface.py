@@ -721,9 +721,9 @@ def episode_select_interface(standard_list):
         if default_select_episode_enable == 1 or default_select_episode_enable == 2:  # 交互界面选集
             select_activated = 0
             for i in range(len(standard_list)):
-                if standard_list[i][1] == []:  # 未选集
-                    select_activated = 1
-                    if standard_list[i][-2] == 1 or standard_list[i][-2] == 2:  # 番剧电影/分集视频
+                if standard_list[i][-2] == 1 or standard_list[i][-2] == 2:  # 番剧电影/分集视频
+                    if standard_list[i][1] == []:  # 未选集
+                        select_activated = 1
                         print("标题:" + standard_list[i][3])
                         print("总集数:" + str(standard_list[i][2]))
                         standard_list[i][1].clear()
@@ -759,39 +759,40 @@ def episode_select_interface(standard_list):
 
             sleep(1)
             for i in range(len(standard_list)):
-                if standard_list[i][1] == []:  # 未选集
-                    select_activated = 1
-                    if standard_list[i][-2] == 3:  # 合集视频
-                        target_url = "https://www.bilibili.com/video/" + standard_list[i][0]
-                        video_response = requests.get(target_url, headers=head)
-                        collection_id_list = re.findall("data-key=\".*?\"", video_response.text)
-                        collection_title_list = re.findall("<div title=\".*?\" class=\"title\">", video_response.text)
-                        collection_name = re.findall("spm_id_from=.*?\" title=\".*?\" class=\"title jumpable\"",
-                                                     video_response.text)
-                        collection_name = re.findall("title=\".*?\"", collection_name[0])
+                if standard_list[i][-2] == 3:  # 合集视频
+                    target_url = "https://www.bilibili.com/video/" + standard_list[i][0]
+                    video_response = requests.get(target_url, headers=head)
+                    collection_id_list = re.findall("data-key=\".*?\"", video_response.text)
+                    collection_title_list = re.findall("<div title=\".*?\" class=\"title\">", video_response.text)
+                    collection_name = re.findall("spm_id_from=.*?\" title=\".*?\" class=\"title jumpable\"",
+                                                 video_response.text)
+                    collection_name = re.findall("title=\".*?\"", collection_name[0])
 
-                        for j in range(len(collection_id_list)):
-                            collection_id_list[j] = collection_id_list[j][10:-1]
-                        for j in range(len(collection_title_list)):
-                            collection_title_list[j] = collection_title_list[j][12:-16]
-                        collection_name = collection_name[0][7:-1]
+                    for j in range(len(collection_id_list)):
+                        collection_id_list[j] = collection_id_list[j][10:-1]
+                    for j in range(len(collection_title_list)):
+                        collection_title_list[j] = collection_title_list[j][12:-16]
+                    collection_name = collection_name[0][7:-1]
 
-                        # print(collection_title_list)
-                        # print(collection_id_list)
-                        # print(collection_name)
-                        # print(len(collection_id_list))
-                        # print(len(collection_title_list))
+                    # print(collection_title_list)
+                    # print(collection_id_list)
+                    # print(collection_name)
+                    # print(len(collection_id_list))
+                    # print(len(collection_title_list))
 
-                        collection_info_dict = {}
-                        for j in range(len(collection_id_list)):
-                            collection_info_dict[collection_id_list[j]] = collection_title_list[j]
-                        # print(collection_info_dict)
-                        # 找到已选定的项目标题，否则打印ID
+                    collection_info_dict = {}
+                    for j in range(len(collection_id_list)):
+                        collection_info_dict[collection_id_list[j]] = collection_title_list[j]
+                    # print(collection_info_dict)
+                    # 找到已选定的项目标题，否则打印ID
+                    pre_selected = standard_list[i][0]
+                    try:
+                        pre_selected = collection_info_dict[pre_selected]
+                    except KeyError:
                         pre_selected = standard_list[i][0]
-                        try:
-                            pre_selected = collection_info_dict[pre_selected]
-                        except KeyError:
-                            pre_selected = standard_list[i][0]
+
+                    if standard_list[i][1] == [] or standard_list[i][1] == [1]:  # 未选集
+                        select_activated = 1
                         limit_display = 0  # 集数过多，限制打印项目时为1
                         if len(collection_title_list) > 20:
                             max_index = 20
@@ -872,6 +873,13 @@ def episode_select_interface(standard_list):
                         else:
                             print("选择全集")
                         print("")
+
+                    else:
+                        for j in range(len(standard_list[i][1])):
+                            standard_list[i][1][j] = collection_id_list[standard_list[i][1][j]]
+                        standard_list[i][1].append(standard_list[i][0])  # 默认选择本身
+                        standard_list[i][1] = list(set(standard_list[i][1]))  # 去重
+                        standard_list[i][3] = collection_name  # 更新标题
             sleep(1)
             if select_activated == 1:
                 print("退出选集交互界面\n")
