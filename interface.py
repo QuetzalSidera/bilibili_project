@@ -192,7 +192,7 @@ def standardize_ID_list(ID_list):
                         video_identity_flag = 3  # 合集视频
                 else:
                     video_identity_flag = 2  # 分集视频
-
+                # print(video_identity_flag)
                 if video_identity_flag == 2 or video_identity_flag == 3:
                     if len(video_episode_info_list) == 1:
                         episode_num = re.findall("/\d*?）", video_episode_info_list[0])
@@ -211,8 +211,6 @@ def standardize_ID_list(ID_list):
                             f.write(video_response.text)
                 else:  # 一般不分集不合集视频
                     episode_num = 1
-                if ID_list[i][2] == 1 or ID_list[i][2] == "unknown":  # BV1wZyHYSEc5 遇到的情况 动画综合，分集但无法得知集数
-                    video_identity_flag = 0
                 try:
                     title = re.findall("\"title\":\".*?\"", video_response.text)
                     title = title[0][9:-1]
@@ -241,6 +239,11 @@ def standardize_ID_list(ID_list):
         ID_list[i][2] = episode_num
         ID_list[i][3] = title
         ID_list[i][4] = video_identity_flag
+
+        if ID_list[i][2] == 1 or ID_list[i][2] == "unknown":  # BV1wZyHYSEc5 遇到的情况 动画综合，分集但无法得知集数
+            video_identity_flag = 0
+            ID_list[i][4] = video_identity_flag
+
     for i in range(len(ID_list)):
         if ID_list[i][2] == "unknown":
             print(ID_list[i][0] + "集数解析错误,默认只有一集")
