@@ -91,7 +91,7 @@ def core_function(url, mode):
                 info_dict = json.loads(base_info)
                 # print(info_dict)
                 # print("html解码方式二(except)")
-                print("该视频为限免视频")
+                print("该视频为番剧电影")
                 video_url = info_dict["result"]["video_info"]["dash"]["video"][0]["baseUrl"]
                 audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
             except (JSONDecodeError, IndexError, KeyError):
@@ -101,6 +101,7 @@ def core_function(url, mode):
                 video_url = ""
                 audio_url = ""
                 fail_flag = 1
+                print("造成此结果的原因可能是 1.视频需要大会员或充电 2.网络问题 3.访问的视频不存在")
         if fail_flag == 0:
             if mode == -1 or mode == -4:  # 全视频或画面
                 video_content = requests.get(video_url, headers=head).content

@@ -549,6 +549,31 @@ def keywords_to_selected_list(keyword, app_type, select_enable, mode):
             display_id_list = in_func_id_list
             display_title_list = in_func_title_list
             selected_id_list = list(range(1, default_number_of_videos + 1))
+            print("关键词\"" + keyword + "\"检索,非交互模式,以下是默认选择的检索结果(共" + str(
+                len(selected_id_list)) + "个):")
+            for i in selected_id_list:
+                info_index = i - 1
+                title = info_list[info_index][1]
+                episode_num = info_list[info_index][2]
+                now_episode_index = info_list[info_index][3]
+                video_type = info_list[info_index][-1]
+                if video_type == 0:
+                    type_tag = "(一般视频)"
+                    episode_tag = ""
+                elif video_type == 1:
+                    type_tag = "(番剧电影)"
+                    episode_tag = "(全" + str(episode_num) + "话)"
+                elif video_type == 2:
+                    type_tag = "(分集视频)"
+                    episode_tag = "(全" + str(episode_num) + "话)"
+                elif video_type == 3:
+                    type_tag = "(合集视频)"
+                    episode_tag = "(第" + str(now_episode_index) + "集/全" + str(episode_num) + "集)"
+                else:
+                    type_tag = "(unknown)"
+                    episode_tag = "(unknown)"
+                print("\t" + str(i) + "." + type_tag + episode_tag + title)
+            print("")
 
         else:  # 交互模式
             display_all_flag = 0  # to_select_num==-1时起作用
@@ -795,6 +820,7 @@ def episode_select_interface(standard_list):
                         pre_selected = standard_list[i][0]
 
                     if standard_list[i][1] == [] or standard_list[i][1] == [1]:  # 未选集
+                        standard_list[i][1].clear()
                         select_activated = 1
                         limit_display = 0  # 集数过多，限制打印项目时为1
                         if len(collection_title_list) > 20:

@@ -41,7 +41,7 @@ video_config = {
     # "robomaster": [-1, 1]
     # "艾莉同学": [-1, 1]
     # "妖怪":[-1,1]
-    # "BV1ss41117Z8": [-3,1]
+    "孤独摇滚！": [-1, 1]
 }
 
 # bilibili_project_debug_setting_variables_begin
