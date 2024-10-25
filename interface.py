@@ -166,8 +166,8 @@ def standardize_ID_list(ID_list):
             target_url = "https://www.bilibili.com/bangumi/play/" + ID_list[i][0]
             video_response = requests.get(target_url, headers=head)
 
-            with open("test" + ".html", "w") as f:
-                f.write(video_response.text)
+            # with open("test" + ".html", "w") as f:
+            #     f.write(video_response.text)
             episode_num = re.findall("全\d*?话", video_response.text)
             episode_num = episode_num[0][1:-1]
             episode_num = eval(episode_num)
@@ -960,7 +960,7 @@ def episode_select_interface(standard_list):
 def display_result(standard_list):
     if len(standard_list):
         cnt = 1
-        print("以下是您选择的项目:")
+        print("以下是您选择的项目(含具体集数):")
         for i in range(len(standard_list)):  # 打印视频选择情况
             if standard_list[i][-2] == 1:  # 番剧电影
                 tag = "(番剧电影)"
@@ -969,7 +969,7 @@ def display_result(standard_list):
                     episode = "\t全集"
                 else:
                     for index in standard_list[i][1]:
-                        episode += "\t第" + str(index) + "集"
+                        episode += " 第" + str(index) + "集"
                 print("\t" + str(cnt) + "." + tag + standard_list[i][3] + episode)
                 cnt += 1
         for i in range(len(standard_list)):  # 打印视频选择情况

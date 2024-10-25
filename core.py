@@ -17,6 +17,7 @@ from user_config import *
 def set_unfold_and_commit_to_core(video):
     id = video[0]
     info = video[1:]
+    error_code=""
     # print(video)
     if info[-2] == 0 or info[-2] == 2:  # 一般视频与分集视频
         target_url = "https://www.bilibili.com/video/" + id
@@ -25,6 +26,9 @@ def set_unfold_and_commit_to_core(video):
             episode_url = "https://www.bilibili.com/video/" + id + "?p=" + str(episode)
             core_function(episode_url, mode)
     elif info[-2] == 1:  # 番剧电影
+        if info[0] != [1]:
+            print("番剧电影编号不连续，分集获取可能错误")
+            error_code = "episode_id_discontinuous"
         target_url = "https://www.bilibili.com/bangumi/play/" + id
         mode = info[-1]
         for episode in info[0]:
