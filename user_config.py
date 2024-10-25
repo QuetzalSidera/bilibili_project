@@ -63,7 +63,7 @@ default_select_enable = 1  # 默认的select_enable
 # case select_enable == 0 不进入检索交互界面
 default_number_of_videos = 5  # 默认取检索结果的前number_of_videos个视频
 # case select_enable == 1 进入检索交互界面
-display_num = 10  # 交互模式下，返回的检索结果数，display_num==-1则不限检索结果数，尽数打印
+display_num = 10  # 交互模式下，返回的检索结果数，display_num==-1则不限检索结果数，尽数打印(每个关键词检索结果约42个)
 
 # ID选集默认与关键词检索的情况下
 default_select_episode_enable = 1  # 等于0时ID，url与关键词默认取前max{default_episode_num,总集数}集；等于1时ID与url，关键词均会进入选集交互界面；等于2时ID，url默认选集但关键词进入选集交互界面
