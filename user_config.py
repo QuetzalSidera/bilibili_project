@@ -37,11 +37,11 @@ video_config = {
     # "幽閉サテライト/幽闭星光 《氷晶の涙》MV": [-1, 1],
     # "【MMD】一张图，让我连夜更新win11【win11娘化】": [-1, 1]
     # "BV14Z4y1N71d": [-1, 1],
-    # "【翼をください】[请给我翅膀] EVA剧场版 破片尾曲":[-1,1]
+    # "【翼をください】[请给我翅膀] EVA剧场版 破片尾曲":[-3,]
     # "robomaster": [-1, 1]
     # "艾莉同学": [-1, 1]
     # "妖怪":[-1,1]
-    "BV1rN411P7i6": [-3,1]
+    # "BV1ss41117Z8": [-3,1]
 }
 
 # bilibili_project_debug_setting_variables_begin
@@ -59,9 +59,9 @@ main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：de
 default_mode = -1  # mode == -1:全流程 -2:获取mp3 -3:获取html -4:获取画面 -5
 
 # 关键词select_enable默认的情况下
-default_select_enable = 0  # 默认的select_enable
+default_select_enable = 1  # 默认的select_enable
 # case select_enable == 0 不进入检索交互界面
-default_number_of_videos = 20  # 默认返回检索结果的前number_of_videos个视频
+default_number_of_videos = 5  # 默认取检索结果的前number_of_videos个视频
 # case select_enable == 1 进入检索交互界面
 display_num = 10  # 交互模式下，返回的检索结果数，display_num==-1则不限检索结果数，尽数打印
 
