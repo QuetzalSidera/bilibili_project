@@ -71,6 +71,9 @@ def core_function(url, mode):
 
     if mode == -1 or mode == -2 or mode == -4:  # 全视频，音频，画面
         # 数据解析
+        video_url = ""
+        audio_url = ""
+        error_code = "null"
         tree = etree.HTML(res_text)
         try:
             base_info = "".join(tree.xpath("/html/head/script[4]/text()"))[20:]
@@ -91,21 +94,30 @@ def core_function(url, mode):
                 info_dict = json.loads(base_info)
                 # print(info_dict)
                 # print("html解码方式二(except)")
-                print("该视频为番剧电影")
+                print("该视频为(免费/限免)番剧电影")
                 video_url = info_dict["result"]["video_info"]["dash"]["video"][0]["baseUrl"]
                 audio_url = info_dict["result"]["video_info"]["dash"]['audio'][0]["baseUrl"]
             except (JSONDecodeError, IndexError, KeyError):
-                print("该视频返回的html暂时无法解析，已保存\"" + title + ".html\"文件")
-                with open("html_file/"+"html_decode_error_" + title + ".html", "w", encoding="utf-8") as f:
-                    f.write(res_text)
-                video_url = ""
-                audio_url = ""
-                fail_flag = 1
-                print("造成此结果的原因可能是 1.视频需要大会员或充电 2.网络问题 3.访问的视频不存在")
-        if fail_flag == 0:
+                try:
+                    base_info = "".join(tree.xpath("/html/head/script[4]/text()"))
+                    base_info = str(base_info)
+                    base_info = re.findall("const\splayurlSSRData\s=\s.*?}}}}}", base_info)[0]
+                    base_info = base_info[23:]
+                    info_dict = json.loads(base_info)
+                    print("该视频为大会员番剧电影，暂无法获取完整版本，获取预览版本")
+                    video_url = info_dict["result"]["video_info"]["durls"][0]["durl"][0]["url"]
+                    error_code = "not_vip"
+                except (JSONDecodeError, IndexError, KeyError):
+                    print("该视频返回的html暂时无法解析，已保存\"" + title + ".html\"文件")
+                    with open("html_file/" + "html_decode_error_" + title + ".html", "w", encoding="utf-8") as f:
+                        f.write(res_text)
+                    video_url = ""
+                    audio_url = ""
+                    error_code = "html_decode_error"
+                    print("造成此结果的原因可能是 1.视频为充电粉丝专享 2.网络问题 3.访问的视频不存在")
+        if error_code == "null":
             if mode == -1 or mode == -4:  # 全视频或画面
                 video_content = requests.get(video_url, headers=head).content
-                # print(video_url)
                 with open("video_file/" + title + video_file_type, "wb") as f:
                     f.write(video_content)
                     f.close()
@@ -132,7 +144,12 @@ def core_function(url, mode):
                 video = VideoFileClip(video_path, audio=False)
                 audio = AudioFileClip(audio_path)
                 video = video.set_audio(audio)
-                video.write_videofile("video_result/" + title + ".mp4")
+                video.write_videofile("video_result/" + title + video_file_type)
+        if error_code == "not_vip":
+            video_content = requests.get(video_url, headers=head).content
+            with open("video_result/" + title + video_file_type, "wb+") as f:
+                f.write(video_content)
+                f.close()
     if mode == -5:
         pass  # 自定义程序
     print("\n")

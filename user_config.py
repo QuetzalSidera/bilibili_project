@@ -41,7 +41,7 @@ video_config = {
     # "robomaster": [-1, 1]
     # "艾莉同学": [-1, 1]
     # "妖怪":[-1,1]
-    "孤独摇滚！": [-1, 1]
+    "https://www.bilibili.com/bangumi/play/ep693248": [-1, 1]
 }
 
 # bilibili_project_debug_setting_variables_begin
