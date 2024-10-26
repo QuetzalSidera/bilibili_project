@@ -753,7 +753,7 @@ def episode_select_interface(standard_list):
             for i in range(len(standard_list)):
                 if standard_list[i][-2] == 1:  # 番剧电影
                     id_list = from_epid_or_ssid_get_ep_list(standard_list[i][0])
-                    if standard_list[i][1] == []:  # 未选集
+                    if standard_list[i][1] == [] or standard_list[i][1] == [1]:  # 未选集
                         print("(番剧电影):" + standard_list[i][3])
                         print("总集数:" + str(standard_list[i][2]))
                         standard_list[i][1].clear()
