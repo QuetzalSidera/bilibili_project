@@ -4,6 +4,8 @@ from video import *
 if __name__ == '__main__':
     # 一、爬取视频(音频)
     if main_debug_setting == 0 or main_debug_setting == 2:
+        if User_Cookie_enable == 1:
+            head["Cookie"] = User_cookie
         get_video(video_config)
     # 二、爬取图片
     if main_debug_setting == 1 or main_debug_setting == 2:
