@@ -10,4 +10,5 @@ html_file/
 *.mp4
 *.wav
 *.html
+*.xml
 test.py

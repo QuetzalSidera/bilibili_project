@@ -26,22 +26,14 @@ def set_unfold_and_commit_to_core(video):
             episode_url = "https://www.bilibili.com/video/" + id + "?p=" + str(episode)
             core_function(episode_url, mode)
     elif info[-2] == 1:  # 番剧电影
-        if info[0] != [1]:
-            print("番剧电影编号不连续，分集获取可能错误")
-            error_code = "episode_id_discontinuous"
-        target_url = "https://www.bilibili.com/bangumi/play/" + id
         mode = info[-1]
-        for episode in info[0]:
-            base_episode_id = id[2:]
-            # 问题:万一是 ep0003以零开头没办法处理？
-            episode_id = id[0:2] + str(eval(base_episode_id) + episode - 1)
+        for episode_id in info[0]:
             episode_url = "https://www.bilibili.com/bangumi/play/" + episode_id
             core_function(episode_url, mode)
     else:  # 合集视频 collection
+        mode = info[-1]
         for collection_item_id in info[0]:
-            target_url = "https://www.bilibili.com/video/" + collection_item_id
-            episode_url = target_url
-            mode = info[-1]
+            episode_url = "https://www.bilibili.com/video/" + collection_item_id
             core_function(episode_url, mode)
 
 

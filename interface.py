@@ -2,7 +2,7 @@
 import re
 import requests
 from time import sleep
-
+from lxml import etree
 from user_config import *
 
 
@@ -751,10 +751,44 @@ def episode_select_interface(standard_list):
         if default_select_episode_enable == 1 or default_select_episode_enable == 2:  # 交互界面选集
             select_activated = 0
             for i in range(len(standard_list)):
-                if standard_list[i][-2] == 1 or standard_list[i][-2] == 2:  # 番剧电影/分集视频
+                if standard_list[i][-2] == 1:  # 番剧电影
+                    id_list = from_epid_or_ssid_get_ep_list(standard_list[i][0])
+                    if standard_list[i][1] == []:  # 未选集
+                        print("(番剧电影):" + standard_list[i][3])
+                        print("总集数:" + str(standard_list[i][2]))
+                        standard_list[i][1].clear()
+                        in_law_index_list = list(range(1, standard_list[i][2] + 1))
+                        for j in range(len(in_law_index_list)):
+                            in_law_index_list[j] = str(in_law_index_list[j])
+                        select_result = input(
+                            "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入select all选择全集:")
+                        while select_result != "exit":
+                            if select_result in in_law_index_list:  # 排除特殊字符
+                                standard_list[i][1].append(id_list[eval(select_result) - 1])
+                                select_result = input("请输入您选择的集数序号:")
+                            elif select_result == "delete":
+                                standard_list[i][1].clear()
+                                print("重新选择")
+                                select_result = input(
+                                    "请输入您选择的集数序号,输入exit退出选择,输入delete重新选择，输入select all选择全集:")
+                            elif select_result == "select all":
+                                standard_list[i][1] = id_list
+                                print("选择全集")
+                                break
+                            else:
+                                print("非法输入")
+                                select_result = input("请输入您选择的集数序号:")
+                    else:
+                        for j in range(len(standard_list[i][1])):
+                            standard_list[i][1][j] = id_list[j]
+                    standard_list[i][1] = list(set(standard_list[i][1]))  # 去重
+                    standard_list[i][1].sort()  # 排序
+                    print("")
+            for i in range(len(standard_list)):
+                if standard_list[i][-2] == 2:  # 分集视频
                     if standard_list[i][1] == []:  # 未选集
                         select_activated = 1
-                        print("标题:" + standard_list[i][3])
+                        print("(分集视频):" + standard_list[i][3])
                         print("总集数:" + str(standard_list[i][2]))
                         standard_list[i][1].clear()
                         # 合法集数列表
@@ -917,7 +951,10 @@ def episode_select_interface(standard_list):
         else:  # 默认选集
             for i in range(len(standard_list)):
                 episode_num = max(default_episode_num, standard_list[i][2])
-                if standard_list[i][-2] == 1 or standard_list[i][-2] == 2:  # 番剧电影/分集视频
+                if standard_list[i][-2] == 1:  # 番剧电影
+                    id_list = from_epid_or_ssid_get_ep_list(standard_list[i][0])
+                    standard_list[i][1] = id_list[0:episode_num]
+                elif standard_list[i][-2] == 2:  # 分集视频
                     standard_list[i][1] = list(range(1, episode_num + 1))
                 elif standard_list[i][-2] == 3:  # 合集视频
                     target_url = "https://www.bilibili.com/video/" + standard_list[i][0]
@@ -955,6 +992,29 @@ def episode_select_interface(standard_list):
             standard_list.pop(i)
 
     return merge_list(standard_list)
+
+
+def from_epid_or_ssid_get_ep_list(epssid):
+    id_list = []
+    target_url = "https://www.bilibili.com/bangumi/play/" + epssid
+    response = requests.get(target_url, headers=head)
+    tree = etree.HTML(response.text)
+    episode_info_url = tree.xpath('/html/head/link[@rel="sitemap"]/@href')[0]
+    print(episode_info_url)
+    episode_response = requests.get(episode_info_url, headers=head)
+    # with open('ss48011.xml', 'w') as f:
+    #     f.write(episode_response.text)
+    #     f.close()
+    episode_tree = etree.XML(episode_response.text.encode('utf-8'))
+    episode_index = 1
+    while True:
+        id = episode_tree.xpath('/season/episodeList/episode[' + str(episode_index) + ']/playUrl/text()')
+        if len(id):
+            id_list.append(id[0][38:])
+            episode_index += 1
+        else:
+            break
+    return id_list
 
 
 # standard_list [[视频id(BV AV与EP),选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频(动画综合也包含在其中)，1: 番剧电影,2:分集视频，3:合集视频),模式],...]

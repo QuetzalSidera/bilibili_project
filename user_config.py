@@ -20,7 +20,7 @@ head = {
 # 4.全满例：直接认定
 
 # 通用用户接口，支持BV与AV号,ss号与ep号，bilibili视频网址，视频关键词检索
-# ID号: [模式，集数] # 注意：番剧由于编码不连续，不支持多集爬取，请列出“每集”的ep号，格式(epxxxxx:[mode,1])
+# ID号: [模式，集数]
 # url: [模式，集数]
 # 关键词: [模式，select_enable] select_enable==0自动选择检索结果交互，select_enable==1自己选择检索结果
 # 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面 -5:自定义
@@ -34,6 +34,7 @@ video_config = {
     # "感情的摩天楼": [-1, 1],  # 关键词检索交互模式
     # "感情的摩天楼": [-2, 1]
     # "BV1gx4y1G7FL": [-1, 1],
+    "ss43164": [-1]
 }
 
 # bilibili_project_debug_setting_variables_begin
@@ -67,8 +68,8 @@ audio_file_type = ".wav"  # 音频文件格式(.mp3,.wav)
 video_file_type = ".mp4"  # 完整视频文件或者画面文件格式(.mp4,.avi)
 
 # 通过Cookie模拟登陆
-User_Cookie_enable = 0  # 如果要使用自定义Cookie请求bilibili服务器，请将此项置1，程序默认使用非大会员账号登陆获得的Cookie
-User_cookie = ""  # 如何获取Cookie在readme.md中
+User_Cookie_enable = 1  # 如果要使用自定义Cookie请求bilibili服务器，请将此项置1，程序默认使用非大会员账号登陆获得的Cookie
+User_cookie = "_uuid=AB86E9D5-2AC5-DAD9-9441-A7FF2365D109941034infoc; buvid_fp=f7f8a8fef2e9196d059ebbe071e10475; enable_web_push=DISABLE; CURRENT_FNVAL=4048; header_theme_version=CLOSE; buvid4=C1AAFDCA-1EC2-8423-C7D5-DDDFDBEA64D442912-024081501-nZQwOEs4uAo%2Fh8e7iiZVgg%3D%3D; CURRENT_QUALITY=112; buvid3=0FD7ECA7-7337-2438-DAE5-684220F6936C25137infoc; b_nut=1724350925; rpdid=|(JYYJk)mkJu0J'u~kRJl|mkY; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk5NTk0NTgsImlhdCI6MTcyOTcwMDE5OCwicGx0IjotMX0.-RZju12-F1F8TSkriPnDvaSziVVW1XiKEs6Bg1llMHY; bili_ticket_expires=1729959398; bp_t_offset_3546777877744078=992472208011952128; SESSDATA=96a6660a%2C1745468930%2C10699%2Aa2CjCr1Niy8iWdJ8Hom5UM6uL3b1WatZZ7_ORyroNRF9Y0eycDeFod3LOEHkBsaduf0PQSVlhHV05aeFhOVUZjQndXMVdpR2haMXRlVlhyRTBGWmxzRXg2X2pDbUtFcXoyajl5d3ByMFo0NnBBWXM4RU52UGlmQzZ3Vms3MUgwNUVDQ2t1OEJ3ak1RIIEC; bili_jct=928e1c73f4e41623abe3fc7ff363a196; DedeUserID=327475434; DedeUserID__ckMd5=66e564664337205d; bp_t_offset_327475434=992481798673924096; b_lsid=4A88BDA9_192C797FE4E; bg_view_33802=330798; home_feed_column=5; browser_resolution=1710-947; sid=4tp43q8c; bg_view_36429=373924"  # 如何获取Cookie在readme.md中 # 检测cookies可用性
 
 # bilibili_project_debug_setting_variables_end
 
