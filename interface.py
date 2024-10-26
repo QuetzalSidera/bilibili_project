@@ -166,11 +166,7 @@ def standardize_ID_list(ID_list):
             target_url = "https://www.bilibili.com/bangumi/play/" + ID_list[i][0]
             video_response = requests.get(target_url, headers=head)
 
-            with open("test" + ".html", "w") as f:
-                f.write(video_response.text)
-                f.close()
             episode_num = re.findall("(全|更新至第)(\d{1,})(话|集)", video_response.text)
-            print(episode_num)
             episode_num = episode_num[0][1]
             episode_num = eval(episode_num)
             title = re.findall("<meta property=\"og:title\" content=\".*?\"/>", video_response.text)
@@ -1000,7 +996,6 @@ def from_epid_or_ssid_get_ep_list(epssid):
     response = requests.get(target_url, headers=head)
     tree = etree.HTML(response.text)
     episode_info_url = tree.xpath('/html/head/link[@rel="sitemap"]/@href')[0]
-    print(episode_info_url)
     episode_response = requests.get(episode_info_url, headers=head)
     # with open('ss48011.xml', 'w') as f:
     #     f.write(episode_response.text)
@@ -1008,9 +1003,9 @@ def from_epid_or_ssid_get_ep_list(epssid):
     episode_tree = etree.XML(episode_response.text.encode('utf-8'))
     episode_index = 1
     while True:
-        id = episode_tree.xpath('/season/episodeList/episode[' + str(episode_index) + ']/playUrl/text()')
-        if len(id):
-            id_list.append(id[0][38:])
+        episode_id = episode_tree.xpath('/season/episodeList/episode[' + str(episode_index) + ']/playUrl/text()')
+        if len(episode_id):
+            id_list.append(episode_id[0][38:])
             episode_index += 1
         else:
             break

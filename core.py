@@ -43,9 +43,6 @@ def core_function(url, mode):
     response = requests.get(url, headers=head)
     res_text = response.text
     soup = BeautifulSoup(res_text, 'lxml')
-    with open("test.html", "w") as f:
-        f.write(response.text)
-        f.close()
 
     # 二、解析html文件
     # 1.获取标题(修正标题以避免误识别成文件路径，防止标题过长导致文件输出出错)
