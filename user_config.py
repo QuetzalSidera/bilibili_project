@@ -34,7 +34,7 @@ video_config = {
     # "感情的摩天楼": [-1, 1],  # 关键词检索交互模式
     # "感情的摩天楼": [-2, 1]
     # "BV1gx4y1G7FL": [-1, 1],
-    "ss43164": [-1]
+    "ss5045": [-1]
 }
 
 # bilibili_project_debug_setting_variables_begin

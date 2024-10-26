@@ -122,7 +122,7 @@ def core_function(url, mode):
                     video_url = ""
                     audio_url = ""
                     error_code = "html_decode_error"
-                    print("造成此结果的原因可能是 1.视频为充电粉丝专享 2.网络问题 3.访问的视频不存在")
+                    print("造成此结果的原因可能是 1.视频为大会员或充电粉丝专享 2.网络问题 3.访问的视频不存在")
         if error_code == "null":
             video_path = "video_file/" + title + video_file_type  # 画面文件路径
             audio_path = "audio_file/" + title + audio_file_type  # 音频文件路径
