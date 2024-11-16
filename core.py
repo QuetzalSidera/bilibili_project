@@ -7,34 +7,51 @@ from interface import *
 from user_config import *
 
 
-# mode == -1:全流程(整个完整视频) -2:获取音频 -3:获取html -4:获取画面
-# video:内核标准格式
-# [[视频id(BV AV与SS EP),选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影),模式],...]
+# result格式
+# [ID号，标题, selected_id_list[],selected_title_list[], mode, 视频类型标签=bangumi set]
+# [ID号，标题, mode, 视频类型标签=single bangumi]
+# [ID号，标题, mode, 视频类型标签=bangumi append]
 
-# 函数输入:video格式变量(列表类型):[视频id(BV AV与SS EP),选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影,2:分集视频，3:合集视频),模式]
-# 函数输出:无
-# 函数输入:video格式变量(列表类型):[视频id(BV AV与SS EP),选择集数列表[], 视频类型标签(0: 一般视频，1: 番剧电影,2:分集视频，3:合集视频),模式]
-def set_unfold_and_commit_to_core(video):
-    id = video[0]
-    info = video[1:]
-    error_code = ""
-    # print(video)
-    if info[-2] == 0 or info[-2] == 2:  # 一般视频与分集视频
-        target_url = "https://www.bilibili.com/video/" + id
-        mode = info[-1]
-        for episode in info[0]:
-            episode_url = "https://www.bilibili.com/video/" + id + "?p=" + str(episode)
-            core_function(episode_url, mode)
-    elif info[-2] == 1:  # 番剧电影
-        mode = info[-1]
-        for episode_id in info[0]:
+# [ID号，标题,  mode, 视频类型标签=ordinary video]
+# [ID号，标题, selected_id_list[数字],selected_title_list[], mode, 视频类型标签=episode video]
+# [ID号，标题, atmo_list[], mode, 视频类型标签=ordinary set]
+# [ID号，标题, atmo_list[], mode, 视频类型标签=complex set]
+# atmo_list[]中atmo格式和ordinary video与episode video的result格式相同
+def set_unfold_and_commit_to_core(result):
+    if result[-1] == "bangumi set":
+        selected_id_list = result[2]
+        mode = result[-2]
+        for episode_id in selected_id_list:
             episode_url = "https://www.bilibili.com/bangumi/play/" + episode_id
             core_function(episode_url, mode)
-    else:  # 合集视频 collection
-        mode = info[-1]
-        for collection_item_id in info[0]:
-            episode_url = "https://www.bilibili.com/video/" + collection_item_id
+    if result[-1] == "single bangumi":
+        episode_id = result[0]
+        mode = result[-2]
+        episode_url = "https://www.bilibili.com/bangumi/play/" + episode_id
+        core_function(episode_url, mode)
+    if result[-1] == "bangumi append":
+        episode_id = result[0]
+        mode = result[-2]
+        episode_url = "https://www.bilibili.com/bangumi/play/" + episode_id
+        core_function(episode_url, mode)
+
+    if result[-1] == "ordinary video":
+        video_id = result[0]
+        mode = result[-2]
+        video_url = "https://www.bilibili.com/video/" + video_id
+        core_function(video_url, mode)
+    if result[-1] == "episode video":
+        set_id = result[0]
+        selected_id_list = result[2]
+        mode = result[-2]
+        for episode_id in selected_id_list:
+            episode_url = "https://www.bilibili.com/video/" + set_id + "?p=" + str(episode_id)
             core_function(episode_url, mode)
+
+    if result[-1] == "ordinary set" or result[-1] == "complex set":
+        atmo_list = result[2]
+        for atmo in atmo_list:
+            set_unfold_and_commit_to_core(atmo)  # 递归
 
 
 def core_function(url, mode):

@@ -25,6 +25,7 @@ head = {
 # 关键词: [模式，select_enable] select_enable==0自动选择检索结果交互，select_enable==1自己选择检索结果
 # 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面 -5:自定义
 video_config = {
+    "BV1FaWreiEcD": [-3]
 
 }
 

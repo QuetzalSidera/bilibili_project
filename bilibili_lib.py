@@ -385,17 +385,23 @@ def get_set_info(res_text):
         # section[]格式 [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set]
     return info
 
-
+# 合集视频：[ID号,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# 复杂合集：[ID号，标题,分集列表section_list[section]，视频类型标签=complex set]
+# section[]格式： [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# atmo[]格式： [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
 def complex_set_unfold(complex_set_info):
     # 将complex_video_set展开成普通合集
     # 合集视频info格式 [合集标题，atmo_list[]，视频类型标签=3]
     # 一般视频与分集视频info格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签]
+    ID=complex_set_info[0]
     title = complex_set_info[1]
     atmo_list = []
     for i in range(len(complex_set_info[2])):
-        atmo_list += complex_set_info[2][i][2]
+        section=complex_set_info[2][i]
+        section_atmo_list=section[2]
+        atmo_list += section_atmo_list
     identity_flag = "ordinary set"
-    info = [title, atmo_list, identity_flag]
+    info = [ID,title, atmo_list, identity_flag]
     return info
 
 
@@ -454,16 +460,37 @@ def display_info_list(info_list):
             episode = ""
             print("\t" + str(index) + "." + tag + episode + info[1])
             index += 1
-        # if info[-1] == "complex set":  # 嵌套合集
-        #     print("合集标题：" + info[1])
-        #     for i in range(len(info[2])):
-        #         print("\t分合集标题:" + info[2][i][0])
-        #         for j in range(len(info[2][i][1])):
-        #             index = j + 1
-        #             if info[2][i][1][j][4] == 2:
-        #                 tag = "(分集视频)"
-        #                 episode = "共" + str(len(info[2][i][1][j][2])) + "集"
-        #             else:
-        #                 tag = "(一般视频)"
-        #                 episode = ""
-        #             print("\t\t" + str(index) + "." + tag + info[2][i][1][j][1] + episode)
+
+
+# result格式
+# [ID号，标题, selected_id_list[],selected_title_list[], mode, 视频类型标签=bangumi set]
+# [ID号，标题, mode, 视频类型标签=single bangumi]
+# [ID号，标题, mode, 视频类型标签=bangumi append]
+
+# [ID号，标题,  mode, 视频类型标签=ordinary video]
+# [ID号，标题, selected_id_list[数字],selected_title_list[], mode, 视频类型标签=episode video]
+# [ID号，标题, atmo_list[], mode, 视频类型标签=ordinary set]
+# [ID号，标题, atmo_list[], mode, 视频类型标签=complex set]
+# atmo_list[]中atmo格式和ordinary video与episode video的result格式相同
+def merge_result_list(result_list):
+    for result in result_list:
+        if result[-1] == "bangumi set":
+            if len(result[2])==0:
+                result_list.remove(result)
+        if result[-1] == "episode video":
+            if len(result[2])==0:
+                result_list.remove(result)
+        if result[-1] == "ordinary set" or result[-1] == "complex set":
+            atmo_list = result[2]
+            to_pop_list=[]
+            for i in range(len(atmo_list)):
+                atmo = atmo_list[i]
+                if atmo[-1] == "episode video" and len(atmo[2])==0:
+                    to_pop_list.append(i)
+            to_pop_list.reverse()
+            for i in to_pop_list:
+                atmo_list.pop(i)
+            result[2]=atmo_list
+            if len(result[2])==0:
+                result_list.remove(result)
+    return result_list

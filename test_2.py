@@ -16,13 +16,17 @@ head = {
 }
 
 
-epid_list = ["ep1113346"]
-for id_item in epid_list:
-    target_url = "https://www.bilibili.com/bangumi/play/" + id_item
-    response = requests.get(target_url, headers=head)
-    with open("ep番剧电影" + '.html', 'w') as f:
-        f.write(response.text)
-        f.close()
+# epid_list = ["ep1113346"]
+# for id_item in epid_list:
+#     target_url = "https://www.bilibili.com/bangumi/play/" + id_item
+#     response = requests.get(target_url, headers=head)
+#     with open("ep番剧电影" + '.html', 'w') as f:
+#         f.write(response.text)
+#         f.close()
+
+list_1=[1,2,3,4,3,3,2,2,3,4]
+list_1.remove(2)
+print(list_1)
     # tree = etree.HTML(response.text)
     # id = (tree.xpath('/html/head/meta[@property="og:url" and @content]/@content')[0]).split("/")[-1]
     # print(id)
