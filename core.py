@@ -1,5 +1,4 @@
 from json import JSONDecodeError
-from lxml import etree
 import json
 from bs4 import BeautifulSoup
 from moviepy.editor import *
@@ -14,6 +13,7 @@ from user_config import *
 
 # 函数输入:video格式变量(列表类型):[视频id(BV AV与SS EP),选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影,2:分集视频，3:合集视频),模式]
 # 函数输出:无
+# 函数输入:video格式变量(列表类型):[视频id(BV AV与SS EP),选择集数列表[], 视频类型标签(0: 一般视频，1: 番剧电影,2:分集视频，3:合集视频),模式]
 def set_unfold_and_commit_to_core(video):
     id = video[0]
     info = video[1:]
@@ -143,7 +143,7 @@ def core_function(url, mode):
             if mode == -1 or mode == -2:  # 全视频或音频
                 try:
                     audio_content = requests.get(audio_url, headers=head).content
-                    with open(audio_path, "wb+") as fp:
+                    with open(audio_path, "wb") as fp:
                         fp.write(audio_content)
                         fp.close()
                     if mode == -1:

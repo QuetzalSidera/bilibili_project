@@ -127,10 +127,11 @@ def user_interface(config_dict):
         print("\n")
     # in_func_dict 标准化完成
     # print(in_func_dict)
-    # 格式 key:[mode,episode/select_enable?,identity_flag]
+    # 格式 key:[mode,episode/select_enable?,identity_flag] episode:数字或者"select_episode"
+
 
     # key 关键词，ID
-    # ID_list 目标格式 [[视频id(BV AV与ss ep), 选择集数列表[], 总集数，视频标题，视频类型标签(0: 一般视频，1: 番剧电影,2:分集视频，3:合集视频), 模式],...]
+    # ID_list 目标格式 [[视频id(BV AV与ss ep), 选择集数列表[], id类型“AVBVid” “ssid”,"epid"，模式],...]
     # keyword_list 目标格式 [[key,select_enable,mode],...]
     ID_list = []
     keyword_list = []
@@ -138,16 +139,14 @@ def user_interface(config_dict):
         if in_func_dict[key][-1] == 0:  # ID模式
             if key[0:2] == "ss" or key[0:2] == "ep":  # 番剧电影ID
                 if in_func_dict[key][1] != "select_episode":
-                    ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", 1,
-                                 in_func_dict[key][0]]]
+                    ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)),"AVBVid",in_func_dict[key][0]]]
                 else:  # 暂不选集
-                    ID_list += [[key, [], "unknown", "unknown", 1, in_func_dict[key][0]]]
+                    ID_list += [[key, [],"AVBVid",in_func_dict[key][0]]]
             else:  # 一般视频ID
                 if in_func_dict[key][1] != "select_episode":
-                    ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)), "unknown", "unknown", "unknown",
-                                 in_func_dict[key][0]]]
+                    ID_list += [[key, list(range(1, in_func_dict[key][1] + 1)),"ssepid",in_func_dict[key][0]]]
                 else:
-                    ID_list += [[key, [], "unknown", "unknown", "unknown", in_func_dict[key][0]]]
+                    ID_list += [[key, [],"ssepid",in_func_dict[key][0]]]
         if in_func_dict[key][-1] == 1:  # 关键词模式
             keyword_list += [[key, in_func_dict[key][1], in_func_dict[key][0]]]
 
