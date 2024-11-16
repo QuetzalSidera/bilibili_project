@@ -20,12 +20,22 @@ bilibili_head = {
 # 从BVAV号获取info
 # 传入参数：BV/AVid
 # 返回值：info：
-# info格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签]
-# 视频类型标签 (0: 一般视频，1: 番剧电影，2:分集视频，3:合集视频，4:合集嵌套合分集视频（BV1wZyHYSEc5，BV17j28YqEv6），5:番剧电影贴片 或 通过BV号索引的单集番剧视频,"unknown":未知) 番剧的附带类型怎么办？
-# 视频类型标签 (一般视频(ordinary video)，1: 番剧电影(bangumi set)，2:分集视频(episode video)，3:合集视频(ordinary set)，4:合集嵌套合分集视频（BV1wZyHYSEc5，BV17j28YqEv6）(complex set)，5:通过BV号索引的单集番剧视频(single bangumi)，番剧电影相关视频(bangumi append),"unknown":未知) 番剧的附带类型怎么办？
+# 视频类型标签 (一般视频(ordinary video)，1: 番剧电影(bangumi set)，2:分集视频(episode video)，3:合集视频(ordinary set)，4:合集嵌套合分集视频（BV1wZyHYSEc5，BV17j28YqEv6）(complex set)，5:通过BV号/ep号索引的单集番剧视频(single bangumi)，番剧电影相关视频(bangumi append),"unknown":未知) 番剧的附带类型怎么办？
 
 # 合集视频info格式 [合集标题，atmo_list[]，视频类型标签=3]
 # 一般视频,分集视频，番剧电影贴片与atmo的info格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签]
+
+# info格式
+# 普通视频：[ID号,标题,视频类型标签=ordinary video] atmo
+# 分集视频： [ID号,标题，分集id列表[数字]，分集标题列表[]，视频类型标签=episode video] atmo
+# 番剧电影合集（ss检索得到）：[ID号,标题，分集id列表[ep号]，分集标题列表[]，视频类型标签=bangumi set]
+# 单集番剧电影或贴片（BV或ep号检索得到）：[ID号,标题,视频类型标签=single bangumi]
+# 番剧电影贴片（BV或ep号检索得到）：[ID号,标题,视频类型标签=bangumi append]
+# 合集视频：[ID号,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# 复杂合集：[合集id，标题,分集列表section_list[section]，视频类型标签=complex set]
+# section[]格式： [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# atmo[]格式： [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
+
 def from_BVAVid_get_info(BVAV_id):
     # 一、请求返回html
     target_url = "https://www.bilibili.com/video/" + BVAV_id
@@ -75,7 +85,6 @@ def from_ssepid_get_info(ssep_id, type):
     target_url = "https://www.bilibili.com/bangumi/play/" + ssep_id
     response = requests.get(target_url, headers=bilibili_head)
     res_text = response.text
-    tree = etree.HTML(res_text)
     if type == "epid":  # 单集番剧电影或单集番剧电影贴片
         info = get_bangumi_info(res_text, "epid")
     elif type == "ssid":  # 番剧电影合集
@@ -125,28 +134,75 @@ def from_search_page_get_id(keyword, target_area="all", page_id=1):
     return id_list
 
 
-# 函数功能：将info_list按照 番剧电影 番剧电影贴片 合集视频 分集视频 一般视频 嵌套合集的方式排序
-# (0: 一般视频，1: 番剧电影，2:分集视频，3:合集视频，4:合集嵌套合分集视频（BV1wZyHYSEc5，BV17j28YqEv6），5:番剧电影贴片)
-def sort_info_list(info_list):
+# 关键词检索返回info_list
+def search_in_bilibili(keyword, target_area="all", page_id=1):
+    info_list = []
+    id_list = from_search_page_get_id(keyword, target_area, page_id)
+    for i in range(len(id_list)):  # ss
+        id = id_list[i][0]
+        id_type = id_list[i][1]
+        if id_type == "ssid":
+            info_list += from_ssepid_get_info(id, "ssid")
+    for i in range(len(id_list)):  # ep
+        id = id_list[i][0]
+        id_type = id_list[i][1]
+        if id_type == "epid":
+            info_list += from_ssepid_get_info(id, "epid")
+    for i in range(len(id_list)):  # BV
+        id = id_list[i][0]
+        id_type = id_list[i][1]
+        if id_type == "BVid":
+            info_list += from_BVAVid_get_info(id)
+    return info_list
+
+
+# info格式
+# 番剧电影合集（ss检索得到）：[ID号,标题，分集id列表[ep号]，分集标题列表[]，视频类型标签=bangumi set]
+# 单集番剧电影或贴片（BV或ep号检索得到）：[ID号,标题,视频类型标签=single bangumi]
+# 番剧电影贴片（BV或ep号检索得到）：[ID号,标题,视频类型标签=bangumi append]
+
+# 普通视频：[ID号,标题,视频类型标签=ordinary video] atmo
+# 分集视频： [ID号,标题，分集id列表[数字]，分集标题列表[]，视频类型标签=episode video] atmo
+# 合集视频：[ID号,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# 复杂合集：[合集id，标题,分集列表section_list[section]，视频类型标签=complex set]
+# section[]格式： [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# atmo[]格式： [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
+# info_list=[info1,info2]
+# 整理info_list type:normal一般，clean整洁
+def sort_info_list(info_list, type="normal"):
     new_info_list = []
     for i in range(len(info_list)):
-        if info_list[i][-1] == 1:  # 番剧电影
+        if info_list[i][-1] == "bangumi set":
             new_info_list.append(info_list[i])
     for i in range(len(info_list)):
-        if info_list[i][-1] == 5:  # 番剧电影贴片
+        if info_list[i][-1] == "single bangumi":
             new_info_list.append(info_list[i])
     for i in range(len(info_list)):
-        if info_list[i][-1] == 3:  # 合集视频
+        if info_list[i][-1] == "bangumi append":
             new_info_list.append(info_list[i])
-    for i in range(len(info_list)):
-        if info_list[i][-1] == 2:  # 分集视频
-            new_info_list.append(info_list[i])
-    for i in range(len(info_list)):
-        if info_list[i][-1] == 0:  # 一般视频
-            new_info_list.append(info_list[i])
-    for i in range(len(info_list)):
-        if info_list[i][-1] == 4:  # 嵌套合集
-            new_info_list.append(info_list[i])
+    if type == "normal":
+        for i in range(len(info_list)):
+            if info_list[i][-1] == "ordinary video":  # 一般视频
+                new_info_list.append(info_list[i])
+            if info_list[i][-1] == "episode video":  # 分集视频
+                new_info_list.append(info_list[i])
+            if info_list[i][-1] == "ordinary set":  # 一般合集
+                new_info_list.append(info_list[i])
+            if info_list[i][-1] == "complex set":  # 嵌套合集
+                new_info_list.append(info_list[i])
+    elif type == "clean":
+        for i in range(len(info_list)):
+            if info_list[i][-1] == "complex set":  # 嵌套合集
+                new_info_list.append(info_list[i])
+        for i in range(len(info_list)):
+            if info_list[i][-1] == "ordinary set":  # 一般合集
+                new_info_list.append(info_list[i])
+        for i in range(len(info_list)):
+            if info_list[i][-1] == "episode video":  # 分集视频
+                new_info_list.append(info_list[i])
+        for i in range(len(info_list)):
+            if info_list[i][-1] == "ordinary video":  # 一般视频
+                new_info_list.append(info_list[i])
     return new_info_list
 
 
@@ -269,8 +325,10 @@ def get_set_info(res_text):
     # info格式 [合集id，标题,分集列表section_list[section]，视频类型标签=complex set] set
     # section[]格式 [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set] sub_set
     # atmo[]格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
-    set_id = tree.xpath('//a[@class="title jumpable" and @target="_blank"]/@href')[0]  # 合集视频才有这个
-    set_id = "https://" + set_id.split('&')[-2][2:]
+    # set_id = tree.xpath('//a[@class="title jumpable" and @target="_blank"]/@href')[0]  # 合集视频才有这个 但是无法请求得到合集
+    # set_id = "https://" + set_id.split('&')[-2][2:]
+    set_id = tree.xpath('/html/head/meta[@data-vue-meta="true" and @itemprop="url" and @content]/@content')[0]
+    set_id = set_id.split("/")[-2]
     set_info = tree.xpath("/html/head/script[5]/text()")[0]
     set_info = re.findall('window.__INITIAL_STATE__=(.*?}});', set_info)[0]  # 用;匹配javascript末尾
     set_info_dict = json.loads(set_info)
@@ -335,35 +393,55 @@ def complex_set_unfold(complex_set_info):
     title = complex_set_info[1]
     atmo_list = []
     for i in range(len(complex_set_info[2])):
-        atmo_list += complex_set_info[2][i][1]
+        atmo_list += complex_set_info[2][i][2]
     identity_flag = "ordinary set"
     info = [title, atmo_list, identity_flag]
     return info
 
 
 # 展示info_list
-# info_list格式 [标题,分集列表section_list[section]，视频类型标签=4] set
-# section[]格式 [标题，atmo_list[atmo]，视频类型标签=3] sub_set
-# atmo[]格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=0或2] atom原子
-# 番剧电影info_list格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签]
-# (0: 一般视频，1: 番剧电影，2:分集视频，3:合集视频，4:合集嵌套合集)
+# info格式
+# 番剧电影合集（ss检索得到）：[ID号,标题，分集id列表[ep号]，分集标题列表[]，视频类型标签=bangumi set]
+# 单集番剧电影或贴片（BV或ep号检索得到）：[ID号,标题,视频类型标签=single bangumi]
+# 番剧电影贴片（BV或ep号检索得到）：[ID号,标题,视频类型标签=bangumi append]
+
+# 普通视频：[ID号,标题,视频类型标签=ordinary video] atmo
+# 分集视频： [ID号,标题，分集id列表[数字]，分集标题列表[]，视频类型标签=episode video] atmo
+# 合集视频：[ID号,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# 复杂合集：[合集id，标题,分集列表section_list[section]，视频类型标签=complex set]
+# section[]格式： [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# atmo[]格式： [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
+# info_list=[info1,info2]
+# 按序打印info_list
 def display_info_list(info_list):
-    info_list = sort_info_list(info_list)
     index = 1
     for info in info_list:
-        if info[-1] == 1:  # 番剧电影
+        if info[-1] == "bangumi set":  # 番剧电影合集
             tag = "(番剧电影)"
             episode = "(共" + str(len(info[2])) + "集)"
             print("\t" + str(index) + "." + tag + episode + info[1])
             index += 1
-        if info[-1] == "bangume append":  # 番剧电影贴片
-            tag = "(番剧电影贴片)"
+        if info[-1] == "single bangumi":  # 单集番剧电影
+            tag = "(番剧电影)"
             episode = ""
             print("\t" + str(index) + "." + tag + episode + info[1])
             index += 1
-        if info[-1] == "ordinary set":  # 合集视频
-            tag = "(合集视频)"
-            episode = "(共" + str(len(info[1])) + "集)"
+        if info[-1] == "bangumi append":  # 番剧电影贴片
+            tag = "(番剧电影PV)"
+            episode = ""
+            print("\t" + str(index) + "." + tag + episode + info[1])
+            index += 1
+        if info[-1] == "ordinary set":  # 一般合集视频
+            tag = "(合集)"
+            episode = "(共" + str(len(info[2])) + "个视频)"
+            print("\t" + str(index) + "." + tag + episode + info[0])
+            index += 1
+        if info[-1] == "complex set":  # 复杂合集视频
+            tag = "(多合集)"
+            episode_num = 0
+            for i in range(len(info[2])):
+                episode_num += len(info[2][i][2])
+            episode = "(共" + str(episode_num) + "个视频)"
             print("\t" + str(index) + "." + tag + episode + info[0])
             index += 1
         if info[-1] == "episode video":  # 分集视频
@@ -376,16 +454,16 @@ def display_info_list(info_list):
             episode = ""
             print("\t" + str(index) + "." + tag + episode + info[1])
             index += 1
-        if info[-1] == "complex set":  # 嵌套合集
-            print("合集标题：" + info[1])
-            for i in range(len(info[2])):
-                print("\t分合集标题:" + info[2][i][0])
-                for j in range(len(info[2][i][1])):
-                    index = j + 1
-                    if info[2][i][1][j][4] == 2:
-                        tag = "(分集视频)"
-                        episode = "共" + str(len(info[2][i][1][j][2])) + "集"
-                    else:
-                        tag = "(一般视频)"
-                        episode = ""
-                    print("\t\t" + str(index) + "." + tag + info[2][i][1][j][1] + episode)
+        # if info[-1] == "complex set":  # 嵌套合集
+        #     print("合集标题：" + info[1])
+        #     for i in range(len(info[2])):
+        #         print("\t分合集标题:" + info[2][i][0])
+        #         for j in range(len(info[2][i][1])):
+        #             index = j + 1
+        #             if info[2][i][1][j][4] == 2:
+        #                 tag = "(分集视频)"
+        #                 episode = "共" + str(len(info[2][i][1][j][2])) + "集"
+        #             else:
+        #                 tag = "(一般视频)"
+        #                 episode = ""
+        #             print("\t\t" + str(index) + "." + tag + info[2][i][1][j][1] + episode)

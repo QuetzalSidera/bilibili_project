@@ -10,42 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="20a78475-a8cc-45d2-a000-7bf9fa9dd38e" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/core.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/image.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/interface.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/b站错误页面.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/b站错误页面2.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/一般视频html示例.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/一般视频手机端界面.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/一般视频网页端界面.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/一般视频返回画质信息.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/分集视频html示例.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/分集视频手机端界面.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/分集视频网页端界面.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/合集视频html示例.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/合集视频在收藏夹中显示为“订阅”.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/合集视频网页端界面.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/合集视频网页端界面2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/大会员视频html示例（艾莉同学第三集）.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/如何手动获取cookie/1.登陆账号后，右键选择“检查”.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/如何手动获取cookie/2.弹出页面中选择“网络”.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/如何手动获取cookie/3.在网络选项中选择“文档”.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/如何手动获取cookie/4.刷新网页，得到header文件.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/如何手动获取cookie/5.点击header文件，找到cookie，作为字符串复制到程序user_cookie中.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/搜索分区.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/搜索界面示例.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/搜索页码.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/番剧电影html示例.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/程序流程框图.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/纪录片：绿色星球画质栏.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/视频合集手机端界面.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/readme/项目结构.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_config.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/video.py" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/new_interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bilibili_lib.py" beforeDir="false" afterPath="$PROJECT_DIR$/bilibili_lib.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/user_config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,21 +93,6 @@
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/html_file" />
     </key>
-  </component>
-  <component name="RunAnythingCache">
-    <myKeys>
-      <visibility group="Grunt" flag="true" />
-      <visibility group="Gulp" flag="true" />
-      <visibility group="HTTP 请求" flag="true" />
-      <visibility group="Node.js" flag="true" />
-      <visibility group="npm" flag="true" />
-      <visibility group="yarn" flag="true" />
-      <visibility group="最近的项目" flag="true" />
-      <visibility group="运行 Python 文件" flag="true" />
-      <visibility group="运行 conda 命令" flag="true" />
-      <visibility group="运行 pip 命令" flag="true" />
-      <visibility group="运行配置" flag="true" />
-    </myKeys>
   </component>
   <component name="RunManager" selected="Python.test">
     <configuration name="interface" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -337,6 +292,8 @@
       <workItem from="1730696867539" duration="1321000" />
       <workItem from="1730736950646" duration="1216000" />
       <workItem from="1731730764792" duration="17723000" />
+      <workItem from="1731748617539" duration="279000" />
+      <workItem from="1731754282833" duration="3682000" />
     </task>
     <servers />
   </component>
@@ -345,12 +302,12 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/get_video_html$main.coverage" NAME="main 覆盖结果" MODIFIED="1729525749823" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/4____html$test_2.coverage" NAME="test_2 覆盖结果" MODIFIED="1731742644090" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/4____html$test_2.coverage" NAME="test_2 覆盖结果" MODIFIED="1731757051651" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/b_html$main.coverage" NAME="main 覆盖结果" MODIFIED="1729925935533" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/bilibili_project$main.coverage" NAME="main 覆盖结果" MODIFIED="1729783625432" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/get_video_html$test.coverage" NAME="test 覆盖结果" MODIFIED="1729525154287" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/b_html$test.coverage" NAME="test 覆盖结果" MODIFIED="1729924373115" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/4____html$test.coverage" NAME="test 覆盖结果" MODIFIED="1731748371505" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/4____html$test.coverage" NAME="test 覆盖结果" MODIFIED="1731756306753" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/b_html$test_2.coverage" NAME="test_2 覆盖结果" MODIFIED="1729923519631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/get_video_html$interface.coverage" NAME="interface 覆盖结果" MODIFIED="1729450415728" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/4____html$main.coverage" NAME="main 覆盖结果" MODIFIED="1730048287904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

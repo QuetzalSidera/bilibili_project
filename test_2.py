@@ -16,19 +16,19 @@ head = {
 }
 
 
-# id_list = ["BV1iwUVYfEbg"]
-# for id_item in id_list:
-#     target_url = "https://www.bilibili.com/video/" + id_item
-#     response = requests.get(target_url, headers=head)
-#     # with open("BV番剧电影" + '.html', 'w') as f:
-#     #     f.write(response.text)
-#     #     f.close()
-#     tree = etree.HTML(response.text)
-#     id = (tree.xpath('/html/head/meta[@property="og:url" and @content]/@content')[0]).split("/")[-1]
-#     print(id)
-#     sitemap_url = tree.xpath('/html/head/link[@rel="sitemap" and @title="Sitemap" and @href]/@href')[0]
-#     print(sitemap_url)
-#     # print(id)
+epid_list = ["ep1113346"]
+for id_item in epid_list:
+    target_url = "https://www.bilibili.com/bangumi/play/" + id_item
+    response = requests.get(target_url, headers=head)
+    with open("ep番剧电影" + '.html', 'w') as f:
+        f.write(response.text)
+        f.close()
+    # tree = etree.HTML(response.text)
+    # id = (tree.xpath('/html/head/meta[@property="og:url" and @content]/@content')[0]).split("/")[-1]
+    # print(id)
+    # sitemap_url = tree.xpath('/html/head/link[@rel="sitemap" and @title="Sitemap" and @href]/@href')[0]
+    # print(sitemap_url)
+    # print(id)
 # id = "BV18nbceJE3z"
 # target_url = "https://space.bilibili.com/327475434"#无默认主页#dynamic动态#video投稿 #favlist #合集channel/series #bangumi追番追剧
 # response = requests.get(target_url, headers=head)
@@ -63,112 +63,112 @@ head = {
 # ID号: [模式，集数]
 # url: [模式，集数]
 # 关键词: [模式，select_enable] select_enable==0自动选择检索结果交互，select_enable==1自己选择检索结果
-def user_input_interface(config_dict):
-    in_func_dict = {}
-    keyword_list = []
-    ID_list = []
-    for key in config_dict:
-        # 1.字符串匹配确定identity_flag
-        # ID
-        ID_head_list = ["BV", "Bv", "bV", "bv", "AV", "Av", "aV", "av", "SS", "Ss", "sS", "ss", "EP", "Ep", "eP", "ep"]
-        url_head_list = ["www.", "WWW.", "https://", "http://"]
-        if key[0:2] in ID_head_list:
-            result = ID_standardize(key)
-            ID = result[0]
-            key_type = result[1]
-        elif (key[0:4] in url_head_list) or (key[0:7] in url_head_list) or (key[0:8] in url_head_list):
-            result = from_url_get_ID(key)
-            ID = result[0]
-            key_type = result[1]
-        else:
-            ID = key
-            key_type = "keyword"
-        in_func_dict[ID] = config_dict[key] + key_type
-    # 默认处理
-    for key in in_func_dict:
-        if in_func_dict[key][-1] == "keyword":  # keyword
-            if len(in_func_dict[key]) == 1:  # 全默认
-                in_func_dict[key] = [default_mode, default_select_enable, in_func_dict[key][-1]]
-            elif len(in_func_dict[key]) == 2:  # 半空
-                if in_func_dict[key][0] >= 0:  # 指定select_enable默认模式
-                    in_func_dict[key] = [default_mode, in_func_dict[key][0], in_func_dict[key][-1]]
-                else:  # 默认select_enable指定模式
-                    in_func_dict[key] = [in_func_dict[key][0], default_select_enable, in_func_dict[key][-1]]
-            elif len(in_func_dict[key]) == 3:  # 全满
-                in_func_dict[key] = [in_func_dict[key][0], in_func_dict[key][1], in_func_dict[key][-1]]
-        else:  # ID
-            if len(in_func_dict[key]) == 1:  # 全默认
-                if default_select_episode_enable == 0 or default_select_episode_enable == 1:  # 默认选集
-                    in_func_dict[key] = [default_mode, list(range(1, default_episode_num + 1)), in_func_dict[key][-1]]
-                else:
-                    in_func_dict[key] = [default_mode, [], in_func_dict[key][-1]]
-            elif len(in_func_dict[key]) == 2:  # 半空
-                if in_func_dict[key][0] >= 0:  # 指定集数默认模式
-                    in_func_dict[key] = [default_mode, list(range(1, in_func_dict[key][0] + 1)), in_func_dict[key][-1]]
-                else:  # 指定模式默认集数
-                    if default_select_episode_enable == 0 or default_select_episode_enable == 1:  # 默认选集
-                        in_func_dict[key] = [in_func_dict[key][0], list(range(1, default_episode_num + 1)),
-                                             in_func_dict[key][-1]]
-                    else:
-                        in_func_dict[key] = [in_func_dict[key][0], [], in_func_dict[key][-1]]
-            elif len(in_func_dict[key]) == 3:  # 全满
-                in_func_dict[key] = [in_func_dict[key][0], in_func_dict[key][1], in_func_dict[key][-1]]
-        # in_func_dict key:[mode,select_enable?/集数列表,key_type]
-    for key in in_func_dict:
-        if in_func_dict[key][-1] == "keyword":
-            keyword_list += [key,in_func_dict[key][0], in_func_dict[key][1]]
-        else:
-            ID_list += key+in_func_dict[key]
-    return [ID_list,keyword_list]
-
-
-def from_url_get_ID(url):
-    in_func_result = re.findall("/(BV|Bv|bV|bv)(([A-Z]|[a-z]|[0-9])+)", url)
-    if len(in_func_result):
-        ID = "BV" + in_func_result[0][1]  # BV
-        id_type = "BVAVid"
-    else:
-        in_func_result = re.findall("/(AV|Av|aV|av)(([A-Z]|[a-z]|[0-9])+)", url)
-        if len(in_func_result):
-            ID = "AV" + in_func_result[0][1]  # AV
-            id_type = "BVAVid"
-        else:
-            in_func_result = re.findall("/(SS|Ss|sS|ss)(([A-Z]|[a-z]|[0-9])+)", url)
-            if len(in_func_result):
-                ID = "ss" + in_func_result[0][1]  # ss
-                id_type = "ssid"
-            else:
-                in_func_result = re.findall("/(EP|Ep|eP|ep)(([A-Z]|[a-z]|[0-9])+)", url)
-                if len(in_func_result):
-                    ID = "ep" + in_func_result[0][1]  # ep
-                    id_type = "epid"
-                else:
-                    ID = "unknown"
-                    id_type = "unknown"
-    return [ID, id_type]
-
-
-def ID_standardize(ID):
-    in_func_result = re.findall("(BV|Bv|bV|bv)(([A-Z]|[a-z]|[0-9])+)", ID)
-    if len(in_func_result):
-        ID = "BV" + in_func_result[0][1]  # BV
-        id_type = "BVAVid"
-    else:
-        in_func_result = re.findall("(AV|Av|aV|av)(([A-Z]|[a-z]|[0-9])+)", ID)
-        if len(in_func_result):
-            ID = "AV" + in_func_result[0][1]  # AV
-            id_type = "BVAVid"
-        else:
-            in_func_result = re.findall("(SS|Ss|sS|ss)(([A-Z]|[a-z]|[0-9])+)", ID)
-            if len(in_func_result):
-                ID = "ss" + in_func_result[0][1]  # ss
-                id_type = "ssid"
-            else:
-                in_func_result = re.findall("(EP|Ep|eP|ep)(([A-Z]|[a-z]|[0-9])+)", ID)
-                if len(in_func_result):
-                    ID = "ep" + in_func_result[0][1]  # ep
-                    id_type = "epid"
-                else:
-                    ID = "unknown"
-                    id_type = "unknown"
-    return [ID, id_type]
+# def user_input_interface(config_dict):
+#     in_func_dict = {}
+#     keyword_list = []
+#     ID_list = []
+#     for key in config_dict:
+#         # 1.字符串匹配确定identity_flag
+#         # ID
+#         ID_head_list = ["BV", "Bv", "bV", "bv", "AV", "Av", "aV", "av", "SS", "Ss", "sS", "ss", "EP", "Ep", "eP", "ep"]
+#         url_head_list = ["www.", "WWW.", "https://", "http://"]
+#         if key[0:2] in ID_head_list:
+#             result = ID_standardize(key)
+#             ID = result[0]
+#             key_type = result[1]
+#         elif (key[0:4] in url_head_list) or (key[0:7] in url_head_list) or (key[0:8] in url_head_list):
+#             result = from_url_get_ID(key)
+#             ID = result[0]
+#             key_type = result[1]
+#         else:
+#             ID = key
+#             key_type = "keyword"
+#         in_func_dict[ID] = config_dict[key] + key_type
+#     # 默认处理
+#     for key in in_func_dict:
+#         if in_func_dict[key][-1] == "keyword":  # keyword
+#             if len(in_func_dict[key]) == 1:  # 全默认
+#                 in_func_dict[key] = [default_mode, default_select_enable, in_func_dict[key][-1]]
+#             elif len(in_func_dict[key]) == 2:  # 半空
+#                 if in_func_dict[key][0] >= 0:  # 指定select_enable默认模式
+#                     in_func_dict[key] = [default_mode, in_func_dict[key][0], in_func_dict[key][-1]]
+#                 else:  # 默认select_enable指定模式
+#                     in_func_dict[key] = [in_func_dict[key][0], default_select_enable, in_func_dict[key][-1]]
+#             elif len(in_func_dict[key]) == 3:  # 全满
+#                 in_func_dict[key] = [in_func_dict[key][0], in_func_dict[key][1], in_func_dict[key][-1]]
+#         else:  # ID
+#             if len(in_func_dict[key]) == 1:  # 全默认
+#                 if default_select_episode_enable == 0 or default_select_episode_enable == 1:  # 默认选集
+#                     in_func_dict[key] = [default_mode, list(range(1, default_episode_num + 1)), in_func_dict[key][-1]]
+#                 else:
+#                     in_func_dict[key] = [default_mode, [], in_func_dict[key][-1]]
+#             elif len(in_func_dict[key]) == 2:  # 半空
+#                 if in_func_dict[key][0] >= 0:  # 指定集数默认模式
+#                     in_func_dict[key] = [default_mode, list(range(1, in_func_dict[key][0] + 1)), in_func_dict[key][-1]]
+#                 else:  # 指定模式默认集数
+#                     if default_select_episode_enable == 0 or default_select_episode_enable == 1:  # 默认选集
+#                         in_func_dict[key] = [in_func_dict[key][0], list(range(1, default_episode_num + 1)),
+#                                              in_func_dict[key][-1]]
+#                     else:
+#                         in_func_dict[key] = [in_func_dict[key][0], [], in_func_dict[key][-1]]
+#             elif len(in_func_dict[key]) == 3:  # 全满
+#                 in_func_dict[key] = [in_func_dict[key][0], in_func_dict[key][1], in_func_dict[key][-1]]
+#         # in_func_dict key:[mode,select_enable?/集数列表,key_type]
+#     for key in in_func_dict:
+#         if in_func_dict[key][-1] == "keyword":
+#             keyword_list += [key,in_func_dict[key][0], in_func_dict[key][1]]
+#         else:
+#             ID_list += key+in_func_dict[key]
+#     return [ID_list,keyword_list]
+#
+#
+# def from_url_get_ID(url):
+#     in_func_result = re.findall("/(BV|Bv|bV|bv)(([A-Z]|[a-z]|[0-9])+)", url)
+#     if len(in_func_result):
+#         ID = "BV" + in_func_result[0][1]  # BV
+#         id_type = "BVAVid"
+#     else:
+#         in_func_result = re.findall("/(AV|Av|aV|av)(([A-Z]|[a-z]|[0-9])+)", url)
+#         if len(in_func_result):
+#             ID = "AV" + in_func_result[0][1]  # AV
+#             id_type = "BVAVid"
+#         else:
+#             in_func_result = re.findall("/(SS|Ss|sS|ss)(([A-Z]|[a-z]|[0-9])+)", url)
+#             if len(in_func_result):
+#                 ID = "ss" + in_func_result[0][1]  # ss
+#                 id_type = "ssid"
+#             else:
+#                 in_func_result = re.findall("/(EP|Ep|eP|ep)(([A-Z]|[a-z]|[0-9])+)", url)
+#                 if len(in_func_result):
+#                     ID = "ep" + in_func_result[0][1]  # ep
+#                     id_type = "epid"
+#                 else:
+#                     ID = "unknown"
+#                     id_type = "unknown"
+#     return [ID, id_type]
+#
+#
+# def ID_standardize(ID):
+#     in_func_result = re.findall("(BV|Bv|bV|bv)(([A-Z]|[a-z]|[0-9])+)", ID)
+#     if len(in_func_result):
+#         ID = "BV" + in_func_result[0][1]  # BV
+#         id_type = "BVAVid"
+#     else:
+#         in_func_result = re.findall("(AV|Av|aV|av)(([A-Z]|[a-z]|[0-9])+)", ID)
+#         if len(in_func_result):
+#             ID = "AV" + in_func_result[0][1]  # AV
+#             id_type = "BVAVid"
+#         else:
+#             in_func_result = re.findall("(SS|Ss|sS|ss)(([A-Z]|[a-z]|[0-9])+)", ID)
+#             if len(in_func_result):
+#                 ID = "ss" + in_func_result[0][1]  # ss
+#                 id_type = "ssid"
+#             else:
+#                 in_func_result = re.findall("(EP|Ep|eP|ep)(([A-Z]|[a-z]|[0-9])+)", ID)
+#                 if len(in_func_result):
+#                     ID = "ep" + in_func_result[0][1]  # ep
+#                     id_type = "epid"
+#                 else:
+#                     ID = "unknown"
+#                     id_type = "unknown"
+#     return [ID, id_type]
