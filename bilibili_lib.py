@@ -144,17 +144,17 @@ def search_in_bilibili(keyword, target_area="all", page_id=1):
         id = id_list[i][0]
         id_type = id_list[i][1]
         if id_type == "ssid":
-            info_list += from_ssepid_get_info(id, "ssid")
+            info_list.append(from_ssepid_get_info(id, "ssid"))
     for i in range(len(id_list)):  # ep
         id = id_list[i][0]
         id_type = id_list[i][1]
         if id_type == "epid":
-            info_list += from_ssepid_get_info(id, "epid")
+            info_list.append(from_ssepid_get_info(id, "epid"))
     for i in range(len(id_list)):  # BV
         id = id_list[i][0]
         id_type = id_list[i][1]
         if id_type == "BVid":
-            info_list += from_BVAVid_get_info(id)
+            info_list.append(from_BVAVid_get_info(id))
     return info_list
 
 
@@ -327,10 +327,10 @@ def get_set_info(res_text):
     # info格式 [合集id，标题,分集列表section_list[section]，视频类型标签=complex set] set
     # section[]格式 [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set] sub_set
     # atmo[]格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
-    # set_id = tree.xpath('//a[@class="title jumpable" and @target="_blank"]/@href')[0]  # 合集视频才有这个 但是无法请求得到合集
-    # set_id = "https://" + set_id.split('&')[-2][2:]
-    set_id = tree.xpath('/html/head/meta[@data-vue-meta="true" and @itemprop="url" and @content]/@content')[0]
-    set_id = set_id.split("/")[-2]
+    set_id = tree.xpath('//a[@class="title jumpable" and @target="_blank"]/@href')[0]  # 合集视频才有这个 但是无法请求得到合集
+    set_id = "https://" + set_id.split('&')[-2][2:]
+    # set_id = tree.xpath('/html/head/meta[@data-vue-meta="true" and @itemprop="url" and @content]/@content')[0]
+    # set_id = set_id.split("/")[-2]
     set_info = tree.xpath("/html/head/script[5]/text()")[0]
     set_info = re.findall('window.__INITIAL_STATE__=(.*?}});', set_info)[0]  # 用;匹配javascript末尾
     set_info_dict = json.loads(set_info)
@@ -443,7 +443,7 @@ def display_info_list(info_list):
         if info[-1] == "ordinary set":  # 一般合集视频
             tag = "(合集)"
             episode = "(共" + str(len(info[2])) + "个视频)"
-            print("\t" + str(index) + "." + tag + episode + info[0])
+            print("\t" + str(index) + "." + tag + episode + info[1])
             index += 1
         if info[-1] == "complex set":  # 复杂合集视频
             tag = "(多合集)"
@@ -451,7 +451,7 @@ def display_info_list(info_list):
             for i in range(len(info[2])):
                 episode_num += len(info[2][i][2])
             episode = "(共" + str(episode_num) + "个视频)"
-            print("\t" + str(index) + "." + tag + episode + info[0])
+            print("\t" + str(index) + "." + tag + episode + info[1])
             index += 1
         if info[-1] == "episode video":  # 分集视频
             tag = "(分集视频)"

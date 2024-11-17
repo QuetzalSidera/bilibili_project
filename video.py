@@ -22,6 +22,7 @@ def get_video(config_list):
     result_list = episode_select_interface(ID_list)  # 选集
     result_list = merge_result_list(result_list)
     display_result_list(result_list)
-    print("即将开始从互联网爬取目标:")
+    if len(result_list):
+        print("即将开始从互联网爬取目标:")
     for result in result_list:
         set_unfold_and_commit_to_core(result)

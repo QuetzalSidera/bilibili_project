@@ -25,8 +25,7 @@ head = {
 # 关键词: [模式，select_enable] select_enable==0自动选择检索结果交互，select_enable==1自己选择检索结果
 # 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面 -5:自定义 -6(程序中):将被删去的重复项目
 video_config = {
-    "BV1FaWreiEcD": [-3]
-
+        "孤独摇滚":[-1]
 }
 
 # bilibili_project_debug_setting_variables_begin

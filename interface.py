@@ -152,7 +152,7 @@ def search_interface(keyword_list):
         if select_enable == 1:
             selected_index_list = []
             if len(info_list) > display_num and display_num != -1:
-                display_list = info_list[0:display_num + 1]
+                display_list = info_list[0:display_num]
                 max_index = display_num
                 limited_display_flag = 1
             else:
@@ -206,11 +206,11 @@ def search_interface(keyword_list):
                         input_result = input("请输入您选择的视频序号:")
             print("关键词\"" + keyword + "\"选择结束")
             for index in selected_index_list:
-                in_func_list += [display_list[index - 1][0], mode, []]
+                in_func_list.append([display_list[index - 1][0], mode, []])
         else:
             selected_list = info_dict[keyword][0:default_number_of_videos + 1]
             for i in range(len(selected_list)):
-                in_func_list += [selected_list[i][0], mode, []]
+                in_func_list.append([selected_list[i][0], mode, []])
             print("关键词:\"" + keyword + "\"默认选择前" + str(default_number_of_videos) + "项")
             display_info_list(selected_list)
         # 默认选集
@@ -258,6 +258,9 @@ def episode_select_interface(selected_list):
         id = selected_list[i][0]
         id_type = ID_process(id)[1]
         info = []
+        print(id)
+        print(id_type)
+        print(selected_list)
         if id_type == "BVid" or id_type == "AVid":
             info = from_BVAVid_get_info(id)
         elif id_type == "ssid" or id_type == "epid":
@@ -276,8 +279,8 @@ def episode_select_interface(selected_list):
                 episode_title_list = []
                 for index in selected_list[i][2]:
                     if index <= len(info[2]):
-                        episode_id_list += info[2][index - 1]
-                        episode_title_list += info[3][index - 1]
+                        episode_id_list.append(info[2][index - 1])
+                        episode_title_list.append(info[3][index - 1])
                 episode_id_list = list(set(episode_id_list))
                 episode_title_list = list(set(episode_title_list))
                 episode_id_list.sort()
@@ -298,8 +301,8 @@ def episode_select_interface(selected_list):
                 episode_title_list = []
                 for index in selected_list[i][2]:
                     if index <= len(info[2]):
-                        episode_id_list += info[2][index - 1]
-                        episode_title_list += info[3][index - 1]
+                        episode_id_list.append(info[2][index - 1])
+                        episode_title_list.append(info[3][index - 1])
                 episode_id_list = list(set(episode_id_list))
                 episode_title_list = list(set(episode_title_list))
                 episode_id_list.sort()
@@ -322,6 +325,8 @@ def episode_select_interface(selected_list):
                 for index in selected_list[i][2]:
                     if index <= len(atmo_list):
                         selected_atmo_list.append(atmo_list[index - 1])
+            if set_preselected_obj != "none":
+                selected_atmo_list.append(set_preselected_obj)
                 # [ID号，标题,  mode, 视频类型标签=ordinary video]
                 # [ID号，标题, selected_id_list[数字],selected_title_list[], mode, 视频类型标签=episode video]
                 # [ID号，标题, atmo_list[], mode, 视频类型标签=ordinary set]
@@ -349,7 +354,7 @@ def episode_select_interface(selected_list):
             # 查找在video_config中指定的合集项目，作为提前选择的项目
             set_preselected_obj = "none"
             unfolded_info = complex_set_unfold(info)
-            atmo_list = info[2]
+            atmo_list = unfolded_info[2]
             for atmo in atmo_list:
                 atmo_id = atmo[0]
                 if atmo_id == id:
@@ -358,12 +363,13 @@ def episode_select_interface(selected_list):
             if len(selected_list[i][2]) == 0:  # 未默认选集
                 selected_atmo_list = select_interface(info, "complex set", set_preselected_obj)
             else:
-                info = complex_set_unfold(info)
-                atmo_list = info[2]
+                atmo_list = unfolded_info[2]
                 selected_atmo_list = []
                 for index in selected_list[i][2]:
                     if index <= len(atmo_list):
                         selected_atmo_list.append(atmo_list[index - 1])
+            if set_preselected_obj != "none":
+                selected_atmo_list.append(set_preselected_obj)
                 # [ID号，标题,  mode, 视频类型标签=ordinary video]
                 # [ID号，标题, selected_id_list[数字],selected_title_list[], mode, 视频类型标签=episode video]
                 # [ID号，标题, atmo_list[], mode, 视频类型标签=ordinary set]
@@ -425,7 +431,7 @@ def select_interface(info, video_type, preselected_obj="none"):
         in_law_index_list = list(range(1, len(episode_id_info_list) + 1))
         for j in range(len(in_law_index_list)):
             in_law_index_list[j] = str(in_law_index_list[j])
-        input_result = input("请输入您选择的序号,输入exit退出选择,输入delete重新选择:")
+        input_result = input("请输入您选择的序号,输入exit退出选择,输入select all选择全集,输入delete重新选择:")
         while input_result != "exit":
             if input_result in in_law_index_list:  # 排除特殊字符
                 selected_index_list.append(eval(input_result))
@@ -434,12 +440,16 @@ def select_interface(info, video_type, preselected_obj="none"):
                 selected_index_list.clear()
                 print("重新选择")
                 input_result = input("请输入您选择的视频序号,输入exit退出选择,输入delete重新选择:")
+            elif input_result == "select all":
+                selected_index_list=list(range(1, len(episode_id_info_list) + 1))
+                print("选择全集")
+                break
             else:
                 print("非法输入")
                 input_result = input("请输入您选择的视频序号:")
         for index in selected_index_list:
-            episode_id_list += episode_id_info_list[index - 1]
-            episode_title_list += episode_title_info_list[index - 1]
+            episode_id_list.append(episode_id_info_list[index - 1])
+            episode_title_list.append(episode_title_info_list[index - 1])
         episode_id_list = list(set(episode_id_list))
         episode_title_list = list(set(episode_title_list))
         episode_id_list.sort()
@@ -463,8 +473,8 @@ def select_interface(info, video_type, preselected_obj="none"):
             else:
                 video_type_tag = ""
                 print("video_type_error_in_function\"select_interface\",\"ordinary set\"")
-            print("合集《" + title + "》" + "共" + str(len(atmo_list)) + "集,默认已经选择" + video_type_tag +
-                  preselected_obj[1] + ":")
+            print("合集《" + title + "》" + "共" + str(len(atmo_list)) + "集,默认已经选择" + video_type_tag +"\""+
+                  preselected_obj[1] + "\":")
         for j in range(len(atmo_list)):
             atmo = atmo_list[j]
             # atmo格式
@@ -483,7 +493,7 @@ def select_interface(info, video_type, preselected_obj="none"):
         in_law_index_list = list(range(1, len(atmo_list) + 1))
         for j in range(len(in_law_index_list)):
             in_law_index_list[j] = str(in_law_index_list[j])
-        input_result = input("请输入您选择的序号,输入exit退出选择,输入delete重新选择:")
+        input_result = input("请输入您选择的序号,输入exit退出选择,输入select all选择全集,输入delete重新选择:")
         while input_result != "exit":
             if input_result in in_law_index_list:  # 排除特殊字符
                 selected_index_list.append(eval(input_result))
@@ -492,11 +502,15 @@ def select_interface(info, video_type, preselected_obj="none"):
                 selected_index_list.clear()
                 print("重新选择")
                 input_result = input("请输入您选择的视频序号,输入exit退出选择,输入delete重新选择:")
+            elif input_result == "select all":
+                selected_index_list=list(range(1, len(atmo_list) + 1))
+                print("选择全集")
+                break
             else:
                 print("非法输入")
                 input_result = input("请输入您选择的视频序号:")
         for index in selected_index_list:
-            selected_atmo_list += atmo_list[index - 1]
+            selected_atmo_list.append(atmo_list[index - 1])
         return selected_atmo_list
     elif video_type == "complex set":
         # 复杂合集：[ID号，标题,分集列表section_list[section]，视频类型标签=complex set]
@@ -508,7 +522,7 @@ def select_interface(info, video_type, preselected_obj="none"):
         section_list = info[2]
         index = 1
         if preselected_obj == "none":
-            print("多合集《" + title + "》" + "共" + str(len(section_list)) + "个分区:")
+            print("含分区合集《" + title + "》" + "共" + str(len(section_list)) + "个分区:")
         else:
             if preselected_obj[-1] == "episode video":
                 video_type_tag = "(分集视频)"
@@ -517,8 +531,8 @@ def select_interface(info, video_type, preselected_obj="none"):
             else:
                 video_type_tag = ""
                 print("video_type_error_in_function\"select_interface\",\"complex set\"")
-            print("多合集《" + title + "》" + "共" + str(len(section_list)) + "个分区,默认已经选择" + video_type_tag +
-                  preselected_obj[1] + ":")
+            print("多合集《" + title + "》" + "共" + str(len(section_list)) + "个分区,默认已经选择" + video_type_tag +"\""+
+                  preselected_obj[1] + "\":")
         for i in range(len(section_list)):
             section = section_list[i]
             print("\t分区标题:" + section[1])
@@ -542,7 +556,7 @@ def select_interface(info, video_type, preselected_obj="none"):
         in_law_index_list = list(range(1, len(atmo_list) + 1))
         for j in range(len(in_law_index_list)):
             in_law_index_list[j] = str(in_law_index_list[j])
-        input_result = input("请输入您选择的序号,输入exit退出选择,输入delete重新选择:")
+        input_result = input("请输入您选择的序号,输入exit退出选择,输入select all选择全集,输入delete重新选择:")
         while input_result != "exit":
             if input_result in in_law_index_list:  # 排除特殊字符
                 selected_index_list.append(eval(input_result))
@@ -551,11 +565,15 @@ def select_interface(info, video_type, preselected_obj="none"):
                 selected_index_list.clear()
                 print("重新选择")
                 input_result = input("请输入您选择的视频序号,输入exit退出选择,输入delete重新选择:")
+            elif input_result == "select all":
+                selected_index_list = list(range(1, len(atmo_list) + 1))
+                print("选择全集")
+                break
             else:
                 print("非法输入")
                 input_result = input("请输入您选择的视频序号:")
         for index in selected_index_list:
-            selected_atmo_list += atmo_list[index - 1]
+            selected_atmo_list.append( atmo_list[index - 1])
         return selected_atmo_list
 
 
@@ -570,76 +588,79 @@ def select_interface(info, video_type, preselected_obj="none"):
 # [ID号，标题, atmo_list[], mode, 视频类型标签=complex set]
 # atmo_list[]中atmo格式和ordinary video与episode video的result格式相同
 def display_result_list(result_list):
-    print_flag = 0
-    index = 1
-    print("以下是你的选择结果:")
-    for result in result_list:
-        if result[-1] == "bangumi set":
-            if result[-2] != -6:  # 不是被删去的重复项目
-                type_tag = "(番剧电影)"
-                episode_tag = "(共" + str(len(result[2])) + "集)"
-                print("\t" + str(index) + "." + type_tag + result[1] + episode_tag)
-                index += 1
-                print_flag = 1
-    for result in result_list:
-        if result[-1] == "single bangumi":
-            if result[-2] != -6:  # 不是被删去的重复项目
-                type_tag = "(单集番剧)"
-                print("\t" + str(index) + "." + type_tag + result[1])
-                index += 1
-                print_flag = 1
-    for result in result_list:
-        if result[-1] == "bangumi append":
-            if result[-2] != -6:  # 不是被删去的重复项目
-                type_tag = "(番剧电影PV)"
-                print("\t" + str(index) + "." + type_tag + result[1])
-                index += 1
-                print_flag = 1
-    for result in result_list:
-        if result[-1] == "ordinary video":
-            if result[-2] != -6:
-                type_tag = "(一般视频)"
-                print("\t" + str(index) + "." + type_tag + result[1])
-                index += 1
-                print_flag = 1
-    for result in result_list:
-        if result[-1] == "episode video":
-            if result[-2] != -6:  # 不是被删去的重复项目
-                type_tag = "(分集视频)"
-                episode_tag = "(共" + str(len(result[2])) + "集)"
-                print("\t" + str(index) + "." + type_tag + result[1] + episode_tag)
-                index += 1
-                print_flag = 1
-    index = 1
-    if print_flag == 1:
-        print("")
+    if len(result_list):
         print_flag = 0
-    for result in result_list:
-        if result[-1] == "ordinary set" or result[-1] == "complex set":
-            if result[-1] == "ordinary set":
-                type_tag = "(合集)"
-            else:
-                type_tag = "(多合集)"
-            print(type_tag + "《" + result[1] + "》:")
-            for i in range(len(result[2])):
-                atmo = result[2][i]
-                if atmo[-1] == "episode video":
+        index = 1
+        print("以下是你的选择结果:")
+        for result in result_list:
+            if result[-1] == "bangumi set":
+                if result[-2] != -6:  # 不是被删去的重复项目
+                    type_tag = "(番剧电影)"
+                    episode_tag = "(共" + str(len(result[2])) + "集)"
+                    print("\t" + str(index) + "." + type_tag + result[1] + episode_tag)
+                    index += 1
+                    print_flag = 1
+        for result in result_list:
+            if result[-1] == "single bangumi":
+                if result[-2] != -6:  # 不是被删去的重复项目
+                    type_tag = "(单集番剧)"
+                    print("\t" + str(index) + "." + type_tag + result[1])
+                    index += 1
+                    print_flag = 1
+        for result in result_list:
+            if result[-1] == "bangumi append":
+                if result[-2] != -6:  # 不是被删去的重复项目
+                    type_tag = "(番剧电影PV)"
+                    print("\t" + str(index) + "." + type_tag + result[1])
+                    index += 1
+                    print_flag = 1
+        for result in result_list:
+            if result[-1] == "ordinary video":
+                if result[-2] != -6:
+                    type_tag = "(一般视频)"
+                    print("\t" + str(index) + "." + type_tag + result[1])
+                    index += 1
+                    print_flag = 1
+        for result in result_list:
+            if result[-1] == "episode video":
+                if result[-2] != -6:  # 不是被删去的重复项目
+                    type_tag = "(分集视频)"
+                    episode_tag = "(共" + str(len(result[2])) + "集)"
+                    print("\t" + str(index) + "." + type_tag + result[1] + episode_tag)
+                    index += 1
+                    print_flag = 1
+        index = 1
+        if print_flag == 1:
+            print("")
+            print_flag = 0
+        for result in result_list:
+            if result[-1] == "ordinary set" or result[-1] == "complex set":
+                if result[-1] == "ordinary set":
+                    type_tag = "(合集)"
+                else:
+                    type_tag = "(多合集)"
+                print(type_tag + "《" + result[1] + "》:")
+                for i in range(len(result[2])):
+                    atmo = result[2][i]
+                    if atmo[-1] == "episode video":
+                        if atmo[-2] != -6:  # 不是被删去的重复项目
+                            atmo_title = atmo[1]
+                            atmo_type_tag = "(分集视频)"
+                            atmo_episode_tag = "(共" + str(len(atmo[2])) + "集)"
+                            print("\t" + str(index) + "." + atmo_type_tag + atmo_title + atmo_episode_tag)
+                            index += 1
+                            print_flag = 1
+                for i in range(len(result[2])):
+                    atmo = result[2][i]
                     if atmo[-2] != -6:  # 不是被删去的重复项目
-                        atmo_title = atmo[1]
-                        atmo_type_tag = "(分集视频)"
-                        atmo_episode_tag = "(共" + str(len(atmo[2])) + "集)"
-                        print("\t" + str(index) + "." + atmo_type_tag + atmo_title + atmo_episode_tag)
-                        index += 1
-                        print_flag = 1
-            for i in range(len(result[2])):
-                atmo = result[2][i]
-                if atmo[-2] != -6:  # 不是被删去的重复项目
-                    if atmo[-1] == "ordinary video":
-                        atmo_title = atmo[1]
-                        atmo_type_tag = "(一般视频)"
-                        print("\t" + str(index) + "." + atmo_type_tag + atmo_title)
-                        index += 1
-                        print_flag = 1
-    if print_flag == 1:
-        print("")
-        print_flag = 0
+                        if atmo[-1] == "ordinary video":
+                            atmo_title = atmo[1]
+                            atmo_type_tag = "(一般视频)"
+                            print("\t" + str(index) + "." + atmo_type_tag + atmo_title)
+                            index += 1
+                            print_flag = 1
+        if print_flag == 1:
+            print("")
+            print_flag = 0
+    else:
+        print("你没有选择任何项目")
