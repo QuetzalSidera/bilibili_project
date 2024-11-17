@@ -1,5 +1,7 @@
 # bilibili html解析函数库
 import re
+import time
+
 import requests
 from lxml import etree
 import json
@@ -385,6 +387,7 @@ def get_set_info(res_text):
         # section[]格式 [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set]
     return info
 
+
 # 合集视频：[ID号,标题，atmo_list[atmo]，视频类型标签=ordinary set]
 # 复杂合集：[ID号，标题,分集列表section_list[section]，视频类型标签=complex set]
 # section[]格式： [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set]
@@ -393,15 +396,15 @@ def complex_set_unfold(complex_set_info):
     # 将complex_video_set展开成普通合集
     # 合集视频info格式 [合集标题，atmo_list[]，视频类型标签=3]
     # 一般视频与分集视频info格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签]
-    ID=complex_set_info[0]
+    ID = complex_set_info[0]
     title = complex_set_info[1]
     atmo_list = []
     for i in range(len(complex_set_info[2])):
-        section=complex_set_info[2][i]
-        section_atmo_list=section[2]
+        section = complex_set_info[2][i]
+        section_atmo_list = section[2]
         atmo_list += section_atmo_list
     identity_flag = "ordinary set"
-    info = [ID,title, atmo_list, identity_flag]
+    info = [ID, title, atmo_list, identity_flag]
     return info
 
 
@@ -473,24 +476,76 @@ def display_info_list(info_list):
 # [ID号，标题, atmo_list[], mode, 视频类型标签=complex set]
 # atmo_list[]中atmo格式和ordinary video与episode video的result格式相同
 def merge_result_list(result_list):
+    # 删除未选集项目
     for result in result_list:
+        type_tag = ""
         if result[-1] == "bangumi set":
-            if len(result[2])==0:
+            type_tag = "(番剧电影)"
+            if len(result[2]) == 0:
+                print(type_tag + "《" + result[1] + "》并未选集，此项目将被移除")
                 result_list.remove(result)
         if result[-1] == "episode video":
-            if len(result[2])==0:
+            type_tag = "(分集视频)"
+            if len(result[2]) == 0:
+                print(type_tag + "《" + result[1] + "》并未选集，此项目将被移除")
                 result_list.remove(result)
         if result[-1] == "ordinary set" or result[-1] == "complex set":
+            type_tag = "(合集)"
             atmo_list = result[2]
-            to_pop_list=[]
+            to_pop_list = []
             for i in range(len(atmo_list)):
                 atmo = atmo_list[i]
-                if atmo[-1] == "episode video" and len(atmo[2])==0:
+                if atmo[-1] == "episode video" and len(atmo[2]) == 0:
+                    atmo_type_tag = "(分集视频)"
+                    print(atmo_type_tag + "《" + atmo[1] + "》并未选集，此项目将被移除")
                     to_pop_list.append(i)
             to_pop_list.reverse()
             for i in to_pop_list:
                 atmo_list.pop(i)
-            result[2]=atmo_list
-            if len(result[2])==0:
+            result[2] = atmo_list
+            if len(result[2]) == 0:
+                print(type_tag + "《" + result[1] + "》并未选集，此项目将被移除")
                 result_list.remove(result)
+    time.sleep(0.6)
+    # 删除BV号，ep号，ss号相同项目 mode变成
+    result_id_list = []
+    repeated_id_list = []
+    for result in result_list:
+        if result[-1] == "ordinary set" or result[-1] == "complex set":
+            atmo_list = result[2]
+            for atmo in atmo_list:
+                repeated_id_list.append(atmo[0])
+        else:
+            result_id_list.append(result[0])
+    # 字典去重
+    result_id_set = set(result_id_list)
+    # 遍历selected_id_list找出重复项目
+    for id_in_set in result_id_set:
+        number_of_repetition = 0
+        for id_in_list in result_id_list:
+            if id_in_list == id_in_set:
+                number_of_repetition += 1
+        if number_of_repetition > 1:
+            repeated_id_list.append(id_in_set)
+    # 归并重复项目
+    for repeated_id in repeated_id_list:
+        save_num = 1  # 保留第一个
+        for i in range(len(result_list)):
+            if result_list[i][-1] == "ordinary set" or result_list[i][-1] == "complex set":
+                atmo_list = result_list[i][2]
+                for j in range(len(atmo_list)):
+                    atmo = atmo_list[j]
+                    if atmo[0] == repeated_id:
+                        if save_num >= 1:
+                            save_num -= 1
+                        else:
+                            result_list[i][2][j][-2] = -6
+                            print("重复项目:\"" + result_list[i][2][j][1] + "\"将被删除")
+            else:
+                if result_list[i][0] == repeated_id:
+                    if save_num >= 1:
+                        save_num -= 1
+                    else:
+                        result_list[i][-2] = -6
+                        print("重复项目:\"" + result_list[i][1] + "\"将被删除")
     return result_list
