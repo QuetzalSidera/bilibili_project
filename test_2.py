@@ -23,11 +23,11 @@ print("aaaa",epid_list)
 # with open("error番剧电影" + '.html', 'w') as f:
 #     f.write(response.text)
 #     f.close()
-# target_url = "https://bangumi.bilibili.com/pgc/admin/external/sitemap/season/ss46498.xml"
-# response = requests.get(target_url, headers=head)
-# with open("error番剧电影xml" + '.xml', 'w') as f:
-#     f.write(response.text)
-#     f.close
+target_url = "https://www.bilibili.com/video/BV1m34y1F7fD/"
+response = requests.get(target_url, headers=head)
+with open("空白标题" + '.html', 'w') as f:
+    f.write(response.text)
+    f.close()
 # print("\033[93mssssss\033[0m")
 a = ['ss46498', '百变校巴之超学先锋4',
      ['ep786589', 'ep786590', 'ep786591', 'ep786592', 'ep786593', 'ep786594', 'ep786595', 'ep786596', 'ep786597',

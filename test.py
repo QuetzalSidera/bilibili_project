@@ -34,7 +34,7 @@ search_keyword_list = jieba.lcut(test_str)
 print(search_keyword_list)
 search_keyword_list = search_keyword_list
 cnt = 1
-for keyword in search_keyword_list:
+for keyword in search_keyword_list[2:]:
     print(keyword)
     if cnt % 2 == 0:
         user_config[keyword] = [-3, 0]

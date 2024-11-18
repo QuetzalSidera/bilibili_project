@@ -92,7 +92,7 @@ def from_ssepid_get_info(ssep_id, type):
     elif type == "ssid":  # 番剧电影合集
         info = get_bangumi_info(res_text, "ssid")
     else:
-        print("\033[91mssepid type error in function\"from_ssepid_get_info\":\033[0m"+ssep_id)
+        print("\033[91mssepid type error in function\"from_ssepid_get_info\":\033[0m" + ssep_id)
         return
     # info格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签]
     return info
@@ -238,7 +238,7 @@ def get_ordinary_video_info(res_text):
     try:
         title = tree.xpath('//h1[@class="video-title special-text-indent"]/@title')[0]
     except IndexError:
-        print("\033[91mnormal video title decode error in function\"get_ordinary_video_info\"\033[0m"+id)
+        print("\033[91mnormal video title decode error in function\"get_ordinary_video_info\"\033[0m" + id)
         title = "decode_error"
     # 3)identity_flag
     identity_flag = "ordinary video"
@@ -277,7 +277,12 @@ def get_bangumi_info(res_text, type):
         identity_flag = "bangumi set"
         sitemap_url = html_tree.xpath('/html/head/link[@rel="sitemap" and @title="Sitemap" and @href]/@href')[0]
         response = requests.get(sitemap_url, headers=bilibili_head)
-        xml_tree = etree.XML(response.text.encode('utf-8'))
+        with open("error.xml", "w", encoding="utf-8") as f:
+            f.write(response.text)
+            f.close()
+        # xml_tree = etree.XML(response.text.encode('utf-8'))# bilibili的.xml文件不规范（难绷），在标题中使用“&”，而不是“&amp”;，此方法会导致程序崩溃
+        parser = etree.HTMLParser(encoding="utf-8")  # 指定parser即可解决上述问题
+        xml_tree = etree.XML(response.text.encode("utf-8"), parser=parser)
         set_id = sitemap_url.split("/")[-1][0:-4]
         title = html_tree.xpath('/html/head/meta[@property="og:title" and @content]/@content')[0]
         episode_id_list = xml_tree.xpath('/season/episodeList/episode/playUrl/text()')
@@ -294,7 +299,7 @@ def get_bangumi_info(res_text, type):
                 print("\033[93mauto clear episode title list\033[0m")
             print("\033[93mauto fill episode title list\033[0m")
             for i in range(len(episode_id_list)):
-                episode_title_list.append(title+" 第"+str(i+1)+"集")
+                episode_title_list.append(title + " 第" + str(i + 1) + "集")
         info = [set_id, title, episode_id_list, episode_title_list, identity_flag]
         print(info)
         return info
