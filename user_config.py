@@ -40,17 +40,17 @@ video_config = {
 main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：debug程序
 
 # 模式默认的情况下
-default_mode = -1  # mode == -1:全流程 -2:获取mp3 -3:获取html -4:获取画面 -5
+default_mode = -4  # mode == -1:全流程 -2:获取mp3 -3:获取html -4:获取画面 -5
 
 # 关键词select_enable默认的情况下
-default_select_enable = 1  # 默认的select_enable
+default_select_enable = 0  # 默认的select_enable
 # case select_enable == 0 不进入检索交互界面
 default_number_of_videos = 5  # 默认取检索结果的前number_of_videos个视频
 # case select_enable == 1 进入检索交互界面
 display_num = 10  # 交互模式下，返回的检索结果数，display_num==-1则不限检索结果数，尽数打印(每个关键词检索结果约42个)
 
 # ID选集默认与关键词检索的情况下
-default_select_episode_enable = 1  # 等于0时ID，url与关键词默认取前max{default_episode_num,总集数}集；等于1时ID，url默认选集但关键词进入选集交互界面,等于2时ID与url，关键词均会进入选集交互界面；
+default_select_episode_enable = 0  # 等于0时ID，url与关键词默认取前max{default_episode_num,总集数}集；等于1时ID，url默认选集但关键词进入选集交互界面,等于2时ID与url，关键词均会进入选集交互界面；
 # case default_select_episode_enable == 0
 default_episode_num = 1  # select_episode_enable == 0默认选择max{default_episode_num,总集数}集
 

@@ -1,0 +1,1 @@
+cd bilibili_project && rm -rf ./audio_file && mkdir audio_file

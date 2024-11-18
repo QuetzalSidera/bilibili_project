@@ -92,7 +92,7 @@ def from_ssepid_get_info(ssep_id, type):
     elif type == "ssid":  # 番剧电影合集
         info = get_bangumi_info(res_text, "ssid")
     else:
-        print("ssepid_type_error")
+        print("\033[91mssepid type error in function\"from_ssepid_get_info\":\033[0m"+ssep_id)
         return
     # info格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签]
     return info
@@ -238,7 +238,7 @@ def get_ordinary_video_info(res_text):
     try:
         title = tree.xpath('//h1[@class="video-title special-text-indent"]/@title')[0]
     except IndexError:
-        print("normal_video_title_decode_error")
+        print("\033[91mnormal video title decode error in function\"get_ordinary_video_info\"\033[0m"+id)
         title = "decode_error"
     # 3)identity_flag
     identity_flag = "ordinary video"
@@ -284,7 +284,19 @@ def get_bangumi_info(res_text, type):
         for i in range(len(episode_id_list)):
             episode_id_list[i] = episode_id_list[i].split("/")[-1]
         episode_title_list = xml_tree.xpath('/season/episodeList/episode/longTitle/text()')
+        # if len(episode_title_list) == 0:
+        #     episode_title_list = xml_tree.xpath('/season/seasonTitle/text()')
+        if len(episode_id_list) != len(episode_title_list):
+            # 一般情况如果有longTitle为空，那所有longTitle都为空，也就是episode_title_list为空，此时触发该if条件，补全longTitle为“番剧标题+第i集”
+            print("\033[93mlen of episode list warning in function\"get_bangumi_info\"\033[0m")
+            if len(episode_title_list) != 0:
+                episode_title_list.clear()  # 清空找到的原标题列表
+                print("\033[93mauto clear episode title list\033[0m")
+            print("\033[93mauto fill episode title list\033[0m")
+            for i in range(len(episode_id_list)):
+                episode_title_list.append(title+" 第"+str(i+1)+"集")
         info = [set_id, title, episode_id_list, episode_title_list, identity_flag]
+        print(info)
         return info
 
 
@@ -324,17 +336,30 @@ def get_episode_video_info(res_text):
 def get_set_info(res_text):
     # identity_flag = "set"
     tree = etree.HTML(res_text)
-    # info格式 [合集id，标题,分集列表section_list[section]，视频类型标签=complex set] set
-    # section[]格式 [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set] sub_set
-    # atmo[]格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
-    set_id = tree.xpath('//a[@class="title jumpable" and @target="_blank"]/@href')[0]  # 合集视频才有这个 但是无法请求得到合集
-    set_id = "https://" + set_id.split('&')[-2][2:]
-    # set_id = tree.xpath('/html/head/meta[@data-vue-meta="true" and @itemprop="url" and @content]/@content')[0]
-    # set_id = set_id.split("/")[-2]
     set_info = tree.xpath("/html/head/script[5]/text()")[0]
     set_info = re.findall('window.__INITIAL_STATE__=(.*?}});', set_info)[0]  # 用;匹配javascript末尾
     set_info_dict = json.loads(set_info)
+
+    # info格式 [合集id，标题,分集列表section_list[section]，视频类型标签=complex set] set
+    # section[]格式 [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set] sub_set
+    # atmo[]格式 [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
+
+    # id为合集id title为合集title
+    # set_id = tree.xpath('//a[@class="title jumpable" and @target="_blank"]/@href')[0]  # 合集视频才有这个 但是无法请求得到合集
+    # set_id = "https://" + set_id.split('&')[-2][2:]
+    # set_title = set_info_dict["videoData"]["ugc_season"]["title"]  # 总title
+
+    # id为合集对应集id title为合集title
+    set_id = tree.xpath('/html/head/meta[@data-vue-meta="true" and @itemprop="url" and @content]/@content')[0]
+    set_id = set_id.split("/")[-2]
     set_title = set_info_dict["videoData"]["ugc_season"]["title"]  # 总title
+
+    # # id为合集中res_text展示出的id(即对应的那一集) title为合集中res_text展示出的title(即对应的那一集)
+    # set_id = tree.xpath('/html/head/meta[@data-vue-meta="true" and @itemprop="url" and @content]/@content')[0]
+    # set_id = set_id.split("/")[-2]
+    # set_title = tree.xpath('/html/head/meta[@data-vue-meta="true" and @itemprop="name" and @name="title" and @content]/@content')
+    # set_title = set_title[0][0:-14]
+
     set_identity_flag = "complex set"  # 嵌套
     # sections>episodes>pages
     section_list = []
@@ -443,7 +468,13 @@ def display_info_list(info_list):
         if info[-1] == "ordinary set":  # 一般合集视频
             tag = "(合集)"
             episode = "(共" + str(len(info[2])) + "个视频)"
-            print("\t" + str(index) + "." + tag + episode + info[1])
+            for i in range(len(info[2])):  # 找到合集中的特殊项
+                if info[2][i][0] == info[0]:
+                    title = info[2][i][1]
+                    break
+            else:  # for else语句debug时小心
+                title = info[1]
+            print("\t" + str(index) + "." + tag + episode + title)
             index += 1
         if info[-1] == "complex set":  # 复杂合集视频
             tag = "(多合集)"
@@ -451,7 +482,14 @@ def display_info_list(info_list):
             for i in range(len(info[2])):
                 episode_num += len(info[2][i][2])
             episode = "(共" + str(episode_num) + "个视频)"
-            print("\t" + str(index) + "." + tag + episode + info[1])
+            unfolded_complex_set_info = complex_set_unfold(info)
+            for i in range(len(unfolded_complex_set_info[2])):  # 找到合集中的特殊项
+                if info[2][i][0] == unfolded_complex_set_info[0]:
+                    title = unfolded_complex_set_info[2][i][1]
+                    break
+            else:  # for else语句debug时小心
+                title = unfolded_complex_set_info[1]
+            print("\t" + str(index) + "." + tag + episode + title)
             index += 1
         if info[-1] == "episode video":  # 分集视频
             tag = "(分集视频)"

@@ -1,23 +1,64 @@
 # 测试用例程
 import requests
 from bilibili_lib import *
-from interface import ID_process
+from video import get_video
+
+import re
+import jieba
 
 head = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0",
     "Referer": "https://www.bilibili.com/",
     "Cookie": "CURRENT_FNVAL=4048; buvid3=BE2D386A-BBCB-E06E-8C2B-F5223B4C8BC517591infoc; b_nut=1721567317; _uuid=67165DF10-7B77-BDE8-3C63-732C2FCAF4D520375infoc; enable_web_push=DISABLE; buvid4=0245F01B-6C4B-CD5A-2EC5-BC060EC0777D18433-024072113-zRTpkL0r94scQqxGfSYKhQ%3D%3D; home_feed_column=5; header_theme_version=CLOSE; rpdid=|(Y|RJRR)Y~0J'u~kulY~Rkk; DedeUserID=1611307689; DedeUserID__ckMd5=b0865dba0b3ced5b; buvid_fp_plain=undefined; is-2022-channel=1; b_lsid=D8542F24_191412D93C0; bsource=search_bing; bmg_af_switch=1; bmg_src_def_domain=i1.hdslb.com; browser_resolution=1659-943; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM2MzQ1OTMsImlhdCI6MTcyMzM3NTMzMywicGx0IjotMX0.Ox8rnEpQH5i1H_wQfH2z5CzZC0y8PlqQCy1KVa8XEfQ; bili_ticket_expires=1723634533; SESSDATA=f567fef6%2C1738927393%2C5d207%2A82CjAh2pSUKwDLr1XiI6ncU5B6NXEfWKS7ES6mDC8yGxM6aT3-BTdvK0KAlYpMhCXtEXgSVkl2aTlQWUNacTZOZ0ZNXzJwZ21QT2ozMXFXcWtFc1FpNnBIWlNWbml2Y3BxNV80bUNMZTBVN1dyb3h0STU1ZklDM0MwckJvanRmTmNkeTBFcW5qYl9RIIEC; bili_jct=8d788bcb503d69ba2ded7dfbb53f6e58; sid=71po5kkf; fingerprint=0c7279b7c69b9542a76b8d9df9b7872a; buvid_fp=BE2D386A-BBCB-E06E-8C2B-F5223B4C8BC517591infoc; bp_t_offset_1611307689=964382000909647872"
 }
-list1 = [1, 1, 1, 122, 3, "ww", "eee"]
-list1+=("wwww")
-set1 = set(list1)
-print(set1)
-print(list1)
-# target_url = "https://www.bilibili.com/video/BV17j28YqEv6"
+# list1 = [1, 1, 1, 122, 3, "ww", "eee"]
+# list1+=("wwww")
+# set1 = set(list1)
+# print(set1)
+# print(list1)
+# ep97015分集标题检索有问题
+user_config = {}
+#
+target_url = "https://www.bilibili.com/video/BV1hA1XYDEx3"
+response = requests.get(target_url, headers=head)
+with open("test.html", "w") as f:
+    f.write(response.text)
+    f.close()
+# res_text = response.text
+# tree = etree.HTML(res_text)
+# set_title=tree.xpath('/html/head/meta[@data-vue-meta="true" and @itemprop="name" and @name="title" and @content]/@content')
+# set_title=set_title[0][0:-14]
+# print(set_title)
+test_str = "".join(re.findall(r"[\u4e00-\u9fa5]", response.text))
+search_keyword_list = jieba.lcut(test_str)
+print(search_keyword_list)
+search_keyword_list = search_keyword_list
+cnt = 1
+for keyword in search_keyword_list:
+    print(keyword)
+    if cnt % 2 == 0:
+        user_config[keyword] = [-3, 0]
+    else:
+        id_list = from_search_page_get_id(keyword)
+        for id_set in id_list:
+            id = id_set[0]
+            cnt2 = 0
+            if cnt2 % 3 == 0:
+                user_config[id] = [-3, 1]
+            elif cnt2 % 3 == 1:
+                user_config[id] = [-3, 2]
+            elif cnt2 % 3 == 2:
+                user_config[id] = [-3]
+            cnt += 1
+    cnt += 1
+    get_video(user_config)
+# target_url = "https://www.bilibili.com/bangumi/play/ep97015"
+# target_url="https://bangumi.bilibili.com/pgc/admin/external/sitemap/season/ss5622.xml"
 # response = requests.get(target_url, headers=head)
-# with open("合集.html", "w") as f:
+# with open('test_xml.xml',"w") as f:
 #     f.write(response.text)
 #     f.close()
+
 # # print(from_search_page_get_id("孤独摇滚"))
 # # id_list = ["BV1wZyHYSEc5", "BV17j28YqEv6", "BV1Wb421E7Yj"]
 # for id in id_list:

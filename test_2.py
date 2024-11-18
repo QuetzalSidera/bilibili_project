@@ -15,24 +15,31 @@ head = {
     "Cookie": "CURRENT_FNVAL=4048; buvid3=BE2D386A-BBCB-E06E-8C2B-F5223B4C8BC517591infoc; b_nut=1721567317; _uuid=67165DF10-7B77-BDE8-3C63-732C2FCAF4D520375infoc; enable_web_push=DISABLE; buvid4=0245F01B-6C4B-CD5A-2EC5-BC060EC0777D18433-024072113-zRTpkL0r94scQqxGfSYKhQ%3D%3D; home_feed_column=5; header_theme_version=CLOSE; rpdid=|(Y|RJRR)Y~0J'u~kulY~Rkk; DedeUserID=1611307689; DedeUserID__ckMd5=b0865dba0b3ced5b; buvid_fp_plain=undefined; is-2022-channel=1; b_lsid=D8542F24_191412D93C0; bsource=search_bing; bmg_af_switch=1; bmg_src_def_domain=i1.hdslb.com; browser_resolution=1659-943; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM2MzQ1OTMsImlhdCI6MTcyMzM3NTMzMywicGx0IjotMX0.Ox8rnEpQH5i1H_wQfH2z5CzZC0y8PlqQCy1KVa8XEfQ; bili_ticket_expires=1723634533; SESSDATA=f567fef6%2C1738927393%2C5d207%2A82CjAh2pSUKwDLr1XiI6ncU5B6NXEfWKS7ES6mDC8yGxM6aT3-BTdvK0KAlYpMhCXtEXgSVkl2aTlQWUNacTZOZ0ZNXzJwZ21QT2ozMXFXcWtFc1FpNnBIWlNWbml2Y3BxNV80bUNMZTBVN1dyb3h0STU1ZklDM0MwckJvanRmTmNkeTBFcW5qYl9RIIEC; bili_jct=8d788bcb503d69ba2ded7dfbb53f6e58; sid=71po5kkf; fingerprint=0c7279b7c69b9542a76b8d9df9b7872a; buvid_fp=BE2D386A-BBCB-E06E-8C2B-F5223B4C8BC517591infoc; bp_t_offset_1611307689=964382000909647872"
 }
 
+epid_list = ["ep1113346","1"]
+print("aaaa",epid_list)
 
-# epid_list = ["ep1113346"]
-# for id_item in epid_list:
-#     target_url = "https://www.bilibili.com/bangumi/play/" + id_item
-#     response = requests.get(target_url, headers=head)
-#     with open("ep番剧电影" + '.html', 'w') as f:
-#         f.write(response.text)
-#         f.close()
+# target_url = "https://www.bilibili.com/bangumi/play/" + "ss46498"
+# response = requests.get(target_url, headers=head)
+# with open("error番剧电影" + '.html', 'w') as f:
+#     f.write(response.text)
+#     f.close()
+# target_url = "https://bangumi.bilibili.com/pgc/admin/external/sitemap/season/ss46498.xml"
+# response = requests.get(target_url, headers=head)
+# with open("error番剧电影xml" + '.xml', 'w') as f:
+#     f.write(response.text)
+#     f.close
+# print("\033[93mssssss\033[0m")
+a = ['ss46498', '百变校巴之超学先锋4',
+     ['ep786589', 'ep786590', 'ep786591', 'ep786592', 'ep786593', 'ep786594', 'ep786595', 'ep786596', 'ep786597',
+      'ep786598', 'ep786599', 'ep786600', 'ep786601', 'ep786602', 'ep786603', 'ep786604', 'ep786605', 'ep786606',
+      'ep786607', 'ep786608', 'ep786609', 'ep786610', 'ep786611', 'ep786612', 'ep786613', 'ep786614'],
+     ['百变校巴之超学先锋4'], 'bangumi set']
 
-list_1=[1,2,3,4,3,3,2,2,3,4]
-list_1.remove(2)
-print(list_1)
-    # tree = etree.HTML(response.text)
-    # id = (tree.xpath('/html/head/meta[@property="og:url" and @content]/@content')[0]).split("/")[-1]
-    # print(id)
-    # sitemap_url = tree.xpath('/html/head/link[@rel="sitemap" and @title="Sitemap" and @href]/@href')[0]
-    # print(sitemap_url)
-    # print(id)
+# id = (tree.xpath('/html/head/meta[@property="og:url" and @content]/@content')[0]).split("/")[-1]
+# print(id)
+# sitemap_url = tree.xpath('/html/head/link[@rel="sitemap" and @title="Sitemap" and @href]/@href')[0]
+# print(sitemap_url)
+# print(id)
 # id = "BV18nbceJE3z"
 # target_url = "https://space.bilibili.com/327475434"#无默认主页#dynamic动态#video投稿 #favlist #合集channel/series #bangumi追番追剧
 # response = requests.get(target_url, headers=head)
