@@ -25,7 +25,7 @@ head = {
 # 关键词: [模式，select_enable] select_enable==0自动选择检索结果交互，select_enable==1自己选择检索结果
 # 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面 -5:自定义 -6(程序中):将被删去的重复项目
 video_config = {
-        "孤独摇滚":[-1]
+        "孤独摇滚":[-1,1]
 }
 
 # bilibili_project_debug_setting_variables_begin
@@ -43,14 +43,14 @@ main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：de
 default_mode = -4  # mode == -1:全流程 -2:获取mp3 -3:获取html -4:获取画面 -5
 
 # 关键词select_enable默认的情况下
-default_select_enable = 0  # 默认的select_enable
+default_select_enable = 1  # 默认的select_enable
 # case select_enable == 0 不进入检索交互界面
 default_number_of_videos = 5  # 默认取检索结果的前number_of_videos个视频
 # case select_enable == 1 进入检索交互界面
 display_num = 10  # 交互模式下，返回的检索结果数，display_num==-1则不限检索结果数，尽数打印(每个关键词检索结果约42个)
 
 # ID选集默认与关键词检索的情况下
-default_select_episode_enable = 0  # 等于0时ID，url与关键词默认取前max{default_episode_num,总集数}集；等于1时ID，url默认选集但关键词进入选集交互界面,等于2时ID与url，关键词均会进入选集交互界面；
+default_select_episode_enable = 1  # 等于0时ID，url与关键词默认取前max{default_episode_num,总集数}集；等于1时ID，url默认选集但关键词进入选集交互界面,等于2时ID与url，关键词均会进入选集交互界面；
 # case default_select_episode_enable == 0
 default_episode_num = 1  # select_episode_enable == 0默认选择max{default_episode_num,总集数}集
 

@@ -2,11 +2,13 @@
 import re
 import time
 
+import lxml
 import requests
 from lxml import etree
 import json
 from process_lib import *
 from user_config import *
+from interface import *
 
 # bilibili请求头
 bilibili_head = {
@@ -139,23 +141,47 @@ def from_search_page_get_id(keyword, target_area="all", page_id=1):
 # 关键词检索返回info_list
 def search_in_bilibili(keyword, target_area="all", page_id=1):
     info_list = []
+    print("正在bilibili搜索\"" + keyword + "\"...")
     id_list = from_search_page_get_id(keyword, target_area, page_id)
+    print("得到bilibili响应，正在整理检索结果")
+    num_of_result = len(id_list)  # 总数
+    index = 0  # 目前检索到的序号
+    progress_bar(num_of_result, index)
     for i in range(len(id_list)):  # ss
         id = id_list[i][0]
         id_type = id_list[i][1]
         if id_type == "ssid":
             info_list.append(from_ssepid_get_info(id, "ssid"))
+            index += 1
+            progress_bar(num_of_result, index)
     for i in range(len(id_list)):  # ep
         id = id_list[i][0]
         id_type = id_list[i][1]
         if id_type == "epid":
             info_list.append(from_ssepid_get_info(id, "epid"))
+            index += 1
+            progress_bar(num_of_result, index)
     for i in range(len(id_list)):  # BV
         id = id_list[i][0]
         id_type = id_list[i][1]
         if id_type == "BVid":
             info_list.append(from_BVAVid_get_info(id))
+            index += 1
+            progress_bar(num_of_result, index)
+    print(":\"" + keyword + "\"检索结果整理结束")
+    time.sleep(0.6)
     return info_list
+
+
+# 进度条
+# 传入参数：num总数，index目前序号
+def progress_bar(num, index):
+    percentage = float(index) / num * 100
+    right_part = (num - index) * "." + "|"
+    left_part = "*" * index
+    print("\r", end="")
+    print("进度: {}{}{:.2f}% ".format(left_part, right_part, percentage), end="")
+    sys.stdout.flush()
 
 
 # info格式
@@ -275,16 +301,19 @@ def get_bangumi_info(res_text, type):
     if type == "ssid":
         html_tree = etree.HTML(res_text)
         identity_flag = "bangumi set"
+        title = html_tree.xpath('/html/head/meta[@property="og:title" and @content]/@content')[0]
         sitemap_url = html_tree.xpath('/html/head/link[@rel="sitemap" and @title="Sitemap" and @href]/@href')[0]
         response = requests.get(sitemap_url, headers=bilibili_head)
-        with open("error.xml", "w", encoding="utf-8") as f:
-            f.write(response.text)
-            f.close()
-        # xml_tree = etree.XML(response.text.encode('utf-8'))# bilibili的.xml文件不规范（难绷），在标题中使用“&”，而不是“&amp”;，此方法会导致程序崩溃
-        parser = etree.HTMLParser(encoding="utf-8")  # 指定parser即可解决上述问题
-        xml_tree = etree.XML(response.text.encode("utf-8"), parser=parser)
+        # with open("error.xml", "w", encoding="utf-8") as f:
+        #     f.write(response.text)
+        #     f.close()
+        try:
+            xml_tree = etree.XML(response.text.encode("utf-8"))
+        except lxml.etree.XMLSyntaxError:
+            parser = etree.HTMLParser(encoding="utf-8")  # 指定parser即可解决上述问题
+            xml_tree = etree.XML(response.text.encode("utf-8"),
+                                 parser=parser)  # bilibili的.xml文件不规范（难绷），在标题中使用“&”，而不是“&amp”;，会导致程序崩溃
         set_id = sitemap_url.split("/")[-1][0:-4]
-        title = html_tree.xpath('/html/head/meta[@property="og:title" and @content]/@content')[0]
         episode_id_list = xml_tree.xpath('/season/episodeList/episode/playUrl/text()')
         for i in range(len(episode_id_list)):
             episode_id_list[i] = episode_id_list[i].split("/")[-1]
@@ -301,7 +330,7 @@ def get_bangumi_info(res_text, type):
             for i in range(len(episode_id_list)):
                 episode_title_list.append(title + " 第" + str(i + 1) + "集")
         info = [set_id, title, episode_id_list, episode_title_list, identity_flag]
-        print(info)
+        # print(info)
         return info
 
 
@@ -452,60 +481,126 @@ def complex_set_unfold(complex_set_info):
 # atmo[]格式： [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
 # info_list=[info1,info2]
 # 按序打印info_list
-def display_info_list(info_list):
+# 特殊项目用蓝色显示
+def display_info_list(info_list, special_item_id_list="none"):
     index = 1
     for info in info_list:
         if info[-1] == "bangumi set":  # 番剧电影合集
             tag = "(番剧电影)"
             episode = "(共" + str(len(info[2])) + "集)"
-            print("\t" + str(index) + "." + tag + episode + info[1])
-            index += 1
-        if info[-1] == "single bangumi":  # 单集番剧电影
+            title = info[1]
+        elif info[-1] == "single bangumi":  # 单集番剧电影
             tag = "(番剧电影)"
             episode = ""
-            print("\t" + str(index) + "." + tag + episode + info[1])
-            index += 1
-        if info[-1] == "bangumi append":  # 番剧电影贴片
+            title = info[1]
+        elif info[-1] == "bangumi append":  # 番剧电影贴片
             tag = "(番剧电影PV)"
             episode = ""
-            print("\t" + str(index) + "." + tag + episode + info[1])
-            index += 1
-        if info[-1] == "ordinary set":  # 一般合集视频
+            title = info[1]
+        elif info[-1] == "episode video":  # 分集视频
+            tag = "(分集视频)"
+            episode = "(共" + str(len(info[2])) + "集)"
+            title = info[1]
+        elif info[-1] == "ordinary video":  # 一般视频
+            tag = "(一般视频)"
+            episode = ""
+            title = info[1]
+        elif info[-1] == "ordinary set":  # 一般合集视频
             tag = "(合集)"
             episode = "(共" + str(len(info[2])) + "个视频)"
-            for i in range(len(info[2])):  # 找到合集中的特殊项
-                if info[2][i][0] == info[0]:
-                    title = info[2][i][1]
-                    break
-            else:  # for else语句debug时小心
+            special_atmo_in_set = locate_atmo(info, info[0])  # 找到合集中的特殊项
+            if special_atmo_in_set != "none":
+                title = special_atmo_in_set[1]
+            else:
                 title = info[1]
-            print("\t" + str(index) + "." + tag + episode + title)
-            index += 1
-        if info[-1] == "complex set":  # 复杂合集视频
+
+        elif info[-1] == "complex set":  # 复杂合集视频
             tag = "(多合集)"
             episode_num = 0
             for i in range(len(info[2])):
                 episode_num += len(info[2][i][2])
             episode = "(共" + str(episode_num) + "个视频)"
-            unfolded_complex_set_info = complex_set_unfold(info)
-            for i in range(len(unfolded_complex_set_info[2])):  # 找到合集中的特殊项
-                if info[2][i][0] == unfolded_complex_set_info[0]:
-                    title = unfolded_complex_set_info[2][i][1]
-                    break
-            else:  # for else语句debug时小心
-                title = unfolded_complex_set_info[1]
+            special_atmo_in_set = locate_atmo(info, info[0])  # 找到合集中的特殊项
+            if special_atmo_in_set != "none":
+                title = special_atmo_in_set[1]
+            else:
+                title = info[1]
+        else:
+            tag = "unknown"
+            episode = "unknown"
+            title = "unknown"
+        if info[0] in special_item_id_list:
+            print("\033[94m" + "\t" + str(index) + "." + tag + episode + title + "\033[0m")
+        else:
             print("\t" + str(index) + "." + tag + episode + title)
-            index += 1
-        if info[-1] == "episode video":  # 分集视频
-            tag = "(分集视频)"
-            episode = "(共" + str(len(info[2])) + "集)"
-            print("\t" + str(index) + "." + tag + episode + info[1])
-            index += 1
-        if info[-1] == "ordinary video":  # 一般视频
-            tag = "(一般视频)"
-            episode = ""
-            print("\t" + str(index) + "." + tag + episode + info[1])
-            index += 1
+        index += 1
+
+
+# info格式
+# 番剧电影合集（ss检索得到）：[ID号,标题，分集id列表[ep号]，分集标题列表[]，视频类型标签=bangumi set]
+# 单集番剧电影或贴片（BV或ep号检索得到）：[ID号,标题,视频类型标签=single bangumi]
+# 番剧电影贴片（BV或ep号检索得到）：[ID号,标题,视频类型标签=bangumi append]
+
+# 普通视频：[ID号,标题,视频类型标签=ordinary video] atmo
+# 分集视频： [ID号,标题，分集id列表[数字]，分集标题列表[]，视频类型标签=episode video] atmo
+# 合集视频：[ID号,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# 复杂合集：[合集id，标题,分集列表section_list[section]，视频类型标签=complex set]
+# section[]格式： [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set]
+# atmo[]格式： [ID号,标题，分集id列表[]，分集标题列表[]，视频类型标签=ordinary video或episode video] atom原子
+
+# 功能：在info_list中按id索引项目，找不到则返回none字符串
+# 传入参数：
+# info_list:各类型视频的info组成的列表，
+# target_id：目标info的id，
+# search_in_set：是否在合集中寻找，如果是，则将遍历合集中的每个atmo,与番剧电影中的每一集
+# return_atmo==True：合集索引返回atmo,return_atmo==False 合集索引返回set_info
+# 返回值：目标info，没找到则返回none字符串
+# 注：search_in_set==True：在番剧电影中找到对应集则返回整个番剧电影的info
+def locate_info(info_list, target_id, search_in_set=True, return_atmo=True):
+    target = "none"
+    for info in info_list:
+        object_id = info[0]
+        if object_id == target_id:
+            target = info
+            return target
+        if search_in_set:
+            if info[-1] == "bangumi set":
+                for episode_id in info[2]:
+                    if episode_id == target_id:
+                        target = info
+                        return target
+            elif info[-1] == "ordinary set" or info[-1] == "complex set":
+                target = locate_atmo(info, target_id)
+                if return_atmo:
+                    return target
+                else:
+                    if target != "none":
+                        target = info
+                        return target
+                    else:
+                        return target
+
+
+# 功能：在合集系列中寻找对应id的项目，找不到则返回none字符串
+# 传入参数：set_info:合集（或复杂合集）的info,target_id：目标atmo的id
+# 返回值：目标info，没找到则返回none字符串
+def locate_atmo(set_info, target_id):
+    if set_info[-1] == "ordinary set":
+        for atmo in set_info[2]:
+            atmo_id = atmo[0]
+            if atmo_id == target_id:
+                return atmo
+    elif set_info[-1] == "complex set":
+        # print(set_info)
+        section_list = set_info[2]
+        for section in section_list:
+            # print(section)
+            atmo_list = section[2]
+            for atmo in atmo_list:
+                atmo_id = atmo[0]
+                if atmo_id == target_id:
+                    return atmo
+    return "none"
 
 
 # result格式

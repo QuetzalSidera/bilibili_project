@@ -9,3 +9,4 @@ readme
 *.mp3
 *.wav
 *.mp4
+*.venv

@@ -1,12 +1,9 @@
 # # 测试用例程
-import requests
-from json import JSONDecodeError
-from lxml import etree
-import json
-from bs4 import BeautifulSoup
-import re
-from bilibili_lib import *
-from user_config import video_config
+import os
+import curses
+import time
+import subprocess
+import curses
 
 #
 head = {
@@ -15,20 +12,77 @@ head = {
     "Cookie": "CURRENT_FNVAL=4048; buvid3=BE2D386A-BBCB-E06E-8C2B-F5223B4C8BC517591infoc; b_nut=1721567317; _uuid=67165DF10-7B77-BDE8-3C63-732C2FCAF4D520375infoc; enable_web_push=DISABLE; buvid4=0245F01B-6C4B-CD5A-2EC5-BC060EC0777D18433-024072113-zRTpkL0r94scQqxGfSYKhQ%3D%3D; home_feed_column=5; header_theme_version=CLOSE; rpdid=|(Y|RJRR)Y~0J'u~kulY~Rkk; DedeUserID=1611307689; DedeUserID__ckMd5=b0865dba0b3ced5b; buvid_fp_plain=undefined; is-2022-channel=1; b_lsid=D8542F24_191412D93C0; bsource=search_bing; bmg_af_switch=1; bmg_src_def_domain=i1.hdslb.com; browser_resolution=1659-943; bili_ticket=eyJhbGciOiJIUzI1NiIsImtpZCI6InMwMyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM2MzQ1OTMsImlhdCI6MTcyMzM3NTMzMywicGx0IjotMX0.Ox8rnEpQH5i1H_wQfH2z5CzZC0y8PlqQCy1KVa8XEfQ; bili_ticket_expires=1723634533; SESSDATA=f567fef6%2C1738927393%2C5d207%2A82CjAh2pSUKwDLr1XiI6ncU5B6NXEfWKS7ES6mDC8yGxM6aT3-BTdvK0KAlYpMhCXtEXgSVkl2aTlQWUNacTZOZ0ZNXzJwZ21QT2ozMXFXcWtFc1FpNnBIWlNWbml2Y3BxNV80bUNMZTBVN1dyb3h0STU1ZklDM0MwckJvanRmTmNkeTBFcW5qYl9RIIEC; bili_jct=8d788bcb503d69ba2ded7dfbb53f6e58; sid=71po5kkf; fingerprint=0c7279b7c69b9542a76b8d9df9b7872a; buvid_fp=BE2D386A-BBCB-E06E-8C2B-F5223B4C8BC517591infoc; bp_t_offset_1611307689=964382000909647872"
 }
 
-epid_list = ["ep1113346","1"]
-print("aaaa",epid_list)
-
+# epid_list = ["ep1113346","1"]
+# print("aaaa",epid_list)
+# def clear_screen():
+#     screen = curses.initscr()
+#     curses.noecho()
+#     curses.cbreak()
+#     screen.keypad(1)
+#     screen.clear()
+#     curses.curs_set(0)
+#     screen.nodelay(True)
+#     curses.endwin()
 # target_url = "https://www.bilibili.com/bangumi/play/" + "ss46498"
 # response = requests.get(target_url, headers=head)
 # with open("error番剧电影" + '.html', 'w') as f:
 #     f.write(response.text)
 #     f.close()
-target_url = "https://www.bilibili.com/video/BV1m34y1F7fD/"
-response = requests.get(target_url, headers=head)
-with open("空白标题" + '.html', 'w') as f:
-    f.write(response.text)
-    f.close()
-# print("\033[93mssssss\033[0m")
+# target_url = "https://www.bilibili.com/video/BV1m34y1F7fD/"
+# response = requests.get(target_url, headers=head)
+# with open("空白标题" + '.html', 'w') as f:
+#     f.write(response.text)
+#     f.close()
+# is_term = 0
+# for key,value in os.environ.items():
+#     if key == "TERM":
+#         is_term = 1
+# if is_term == 0:
+#     os.environ['TERM'] = 'xterm-256color'
+# print(is_term)
+import sys
+import time
+
+
+def progress_bar():
+    for i in range(1, 101):
+        print("\r", end="")
+        print("Download progress: {}%: ".format(i), "▋" * (i // 2), end="")
+        sys.stdout.flush()
+        time.sleep(0.05)
+
+
+if __name__ == '__main__':
+    print("\r", end="")
+    print("Download progress: {}%: ".format(1), "▋" * (1 // 2), end="")
+    sys.stdout.flush()
+    print("\r", end="")
+    sys.stdout.flush()
+    # progress_bar()
+    # sys.stdout.delete()
+    # print("a")
+    # progress_bar()
+    # i = 1
+    # print("Download progress: {}%: ".format(i), "▋" * (i // 2), end="")
+    # sys.stdout.flush()
+    # print("\r", end="")
+    # i = 2
+    # print("Download progress: {}%: ".format(i), "▋" * (i // 2), end="")
+    # # sys.stdout.flush()
+    # print("aaaaaaà11111\n", end="")
+    # print("\b\b\b\b\b" * 10)
+    # print("qqqq")
+    # # os.environ["TERM"] = "xterm-color"
+    # os.system('clear')
+    # print("\033[H\033[J")
+    # print("\r", end="")
+    # # print("\r", end="")
+    # sys.stdout.flush()
+    # print("aaaa")
+    # progress_bar()
+# system("export TERM=xterm")
+# system("echo $shell")
+# i=subprocess.call("clear", shell=True)
 a = ['ss46498', '百变校巴之超学先锋4',
      ['ep786589', 'ep786590', 'ep786591', 'ep786592', 'ep786593', 'ep786594', 'ep786595', 'ep786596', 'ep786597',
       'ep786598', 'ep786599', 'ep786600', 'ep786601', 'ep786602', 'ep786603', 'ep786604', 'ep786605', 'ep786606',

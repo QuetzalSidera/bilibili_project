@@ -1,3 +1,6 @@
+import os
+import sys
+
 from bilibili_lib import *
 import time
 
@@ -34,7 +37,7 @@ def user_input_interface(config_dict):
                 else:  # 默认select_enable指定模式
                     in_func_dict[key] = [in_func_dict[key][0], default_select_enable, in_func_dict[key][-1]]
             elif len(in_func_dict[key]) == 3:  # 全满
-                in_func_dict[key] = [in_func_dict[key][0], list(range(1, in_func_dict[key][1] + 1)),
+                in_func_dict[key] = [in_func_dict[key][0], in_func_dict[key][1],
                                      in_func_dict[key][-1]]
         else:  # ID
             if len(in_func_dict[key]) == 1:  # 全默认
@@ -141,9 +144,7 @@ def search_interface(keyword_list):
     # 格式：[[key,mode,episode],...]与ID_list一致
     for item in keyword_list:
         keyword = item[0]
-        print("正在bilibili搜索\"" + keyword + "\"...")
         info_dict[keyword] = sort_info_list(search_in_bilibili(keyword))
-        print("\"" + keyword + "\"检索信息整理完毕")
     for item in keyword_list:
         keyword = item[0]
         mode = item[1]
@@ -151,6 +152,7 @@ def search_interface(keyword_list):
         info_list = info_dict[keyword]
         if select_enable == 1:
             selected_index_list = []
+            selected_id_list = []
             if len(info_list) > display_num and display_num != -1:
                 display_list = info_list[0:display_num]
                 max_index = display_num
@@ -160,6 +162,9 @@ def search_interface(keyword_list):
                 max_index = len(info_list)
                 limited_display_flag = 0
             if limited_display_flag == 1:
+                os.system('clear')
+                print("关键词:\"" + keyword + "\"检索结果如下，共" + str(len(info_list)) + "个，仅展示前" + str(
+                    len(display_list)) + "个:")
                 display_info_list(display_list)
                 in_law_index_list = list(range(1, max_index + 1))
                 for i in range(len(in_law_index_list)):
@@ -169,6 +174,11 @@ def search_interface(keyword_list):
                 while input_result != "exit":
                     if input_result in in_law_index_list:  # 排除特殊字符
                         selected_index_list.append(eval(input_result))
+                        selected_id_list.append(display_list[eval(input_result) - 1][0])
+                        os.system('clear')
+                        print("关键词:\"" + keyword + "\"检索结果如下，共" + str(len(info_list)) + "个，仅展示前" + str(
+                            len(display_list)) + "个:")
+                        display_info_list(display_list, selected_id_list)
                         input_result = input("请输入您选择的视频序号:")
                     elif input_result == "display all":
                         print("\n展示所有项目\n")
@@ -176,18 +186,32 @@ def search_interface(keyword_list):
                         max_index = len(info_list)
                         limited_display_flag = 0
                         selected_index_list.clear()
+                        selected_id_list.clear()
                         time.sleep(0.6)
                         break
                     elif input_result == "delete":  # 输入delete重新选择
                         selected_index_list.clear()
+                        selected_id_list.clear()
                         print("重新选择")
+                        time.sleep(0.6)
+                        os.system('clear')
+                        print("关键词:\"" + keyword + "\"检索结果如下，共" + str(len(info_list)) + "个，仅展示前" + str(
+                            len(display_list)) + "个:")
+                        display_info_list(display_list, selected_id_list)
                         input_result = input(
                             "请输入您选择的视频序号,输入exit退出选择,输入delete重新选择，输入display all展示所有结果:")
                     else:
                         print("非法输入")
+                        time.sleep(0.6)
+                        os.system('clear')
+                        print("关键词:\"" + keyword + "\"检索结果如下，共" + str(len(info_list)) + "个，仅展示前" + str(
+                            len(display_list)) + "个:")
+                        display_info_list(display_list, selected_id_list)
                         input_result = input("请输入您选择的视频序号:")
 
             if limited_display_flag == 0:
+                os.system('clear')
+                print("关键词:\"" + keyword + "\"检索结果如下，共:" + str(len(info_list)) + "个")
                 display_info_list(display_list)
                 in_law_index_list = list(range(1, max_index + 1))
                 for i in range(len(in_law_index_list)):
@@ -196,15 +220,30 @@ def search_interface(keyword_list):
                 while input_result != "exit":
                     if input_result in in_law_index_list:  # 排除特殊字符
                         selected_index_list.append(eval(input_result))
+                        selected_id_list.append(display_list[eval(input_result) - 1][0])
+                        os.system('clear')
+                        print("关键词:\"" + keyword + "\"检索结果如下，共:" + str(len(info_list)) + "个")
+                        display_info_list(display_list, selected_id_list)
                         input_result = input("请输入您选择的视频序号:")
                     elif input_result == "delete":
                         selected_index_list.clear()
+                        selected_id_list.clear()
                         print("重新选择")
+                        time.sleep(0.6)
+                        os.system('clear')
+                        print("关键词:\"" + keyword + "\"检索结果如下，共:" + str(len(info_list)) + "个")
+                        display_info_list(display_list, selected_id_list)
                         input_result = input("请输入您选择的视频序号,输入exit退出选择,输入delete重新选择:")
                     else:
                         print("非法输入")
+                        time.sleep(0.6)
+                        os.system('clear')
+                        print("关键词:\"" + keyword + "\"检索结果如下，共:" + str(len(info_list)) + "个")
+                        display_info_list(display_list, selected_id_list)
                         input_result = input("请输入您选择的视频序号:")
             print("关键词\"" + keyword + "\"选择结束")
+            time.sleep(0.6)
+            os.system('clear')
             for index in selected_index_list:
                 in_func_list.append([display_list[index - 1][0], mode, []])
         else:
@@ -257,9 +296,9 @@ def episode_select_interface(selected_list):
         id = selected_list[i][0]
         id_type = ID_process(id)[1]
         info = []
-        print(id)
-        print(id_type)
-        print(selected_list)
+        # print(id)
+        # print(id_type)
+        # print(selected_list)
         if id_type == "BVid" or id_type == "AVid":
             info = from_BVAVid_get_info(id)
         elif id_type == "ssid" or id_type == "epid":
@@ -481,7 +520,8 @@ def select_interface(info, video_type, preselected_obj="none"):
                 video_type_tag = "(一般视频)"
             else:
                 video_type_tag = ""
-                print("\033[91mtype of preselected_obj error in function\"select_interface\",\"ordinary set\":\033[0m",preselected_obj)
+                print("\033[91mtype of preselected_obj error in function\"select_interface\",\"ordinary set\":\033[0m",
+                      preselected_obj)
             print("合集《" + title + "》" + "共" + str(len(atmo_list)) + "集,默认已经选择" + video_type_tag + "\"" +
                   preselected_obj[1] + "\":")
         for j in range(len(atmo_list)):
@@ -496,7 +536,7 @@ def select_interface(info, video_type, preselected_obj="none"):
                 type_tag = "(一般视频)"
                 episode_tag = ""
             else:
-                print("\033[91mtype of atmo in set error in function\"select_interface\",\"ordinary set\"\033[0m",atmo)
+                print("\033[91mtype of atmo in set error in function\"select_interface\",\"ordinary set\"\033[0m", atmo)
                 return
             print("\t" + str(j + 1) + "." + type_tag + episode_tag + atmo[1])
         in_law_index_list = list(range(1, len(atmo_list) + 1))
@@ -539,7 +579,8 @@ def select_interface(info, video_type, preselected_obj="none"):
                 video_type_tag = "(一般视频)"
             else:
                 video_type_tag = ""
-                print("\033[91mtype of preselected_obj error in function\"select_interface\",\"complex set\":\033[0m",preselected_obj)
+                print("\033[91mtype of preselected_obj error in function\"select_interface\",\"complex set\":\033[0m",
+                      preselected_obj)
             print("多合集《" + title + "》" + "共" + str(
                 len(section_list)) + "个分区,默认已经选择" + video_type_tag + "\"" +
                   preselected_obj[1] + "\":")
@@ -556,7 +597,8 @@ def select_interface(info, video_type, preselected_obj="none"):
                     type_tag = "(分集视频)"
                     episode_tag = "(共" + str(len(atmo[2])) + "集)"
                 else:
-                    print("\033[91mtype of atmo in set error in function\"select_interface\",\"complex set\":\033[0m",atmo)
+                    print("\033[91mtype of atmo in set error in function\"select_interface\",\"complex set\":\033[0m",
+                          atmo)
                     return
                 print("\t\t" + str(index) + "." + type_tag + atmo_title + episode_tag)
                 index += 1
@@ -649,7 +691,7 @@ def display_result_list(result_list):
                     type_tag = "(合集)"
                 else:
                     type_tag = "(含分区合集)"
-                print("\t"+type_tag + "《" + result[1] + "》:")
+                print("\t" + type_tag + "《" + result[1] + "》:")
                 for i in range(len(result[2])):
                     atmo = result[2][i]
                     if atmo[-1] == "episode video":
@@ -675,3 +717,5 @@ def display_result_list(result_list):
             print_flag = 0
     else:
         print("你没有选择任何项目")
+
+
