@@ -180,7 +180,7 @@ def progress_bar(num, index):
     right_part = (num - index) * "." + "|"
     left_part = "*" * index
     print("\r", end="")
-    print("进度: {}{}{:.2f}% ".format(left_part, right_part, percentage), end="")
+    print("进度: {}{}\033[94m[{}/{}] {:.2f}%\033[0m ".format(left_part, right_part,index,num, percentage), end="")
     sys.stdout.flush()
 
 

@@ -55,7 +55,7 @@ def get_image(target_url, recursive=0):  # 输入网址获取图片
                 res = requests.get(url_each, head)
                 res.encoding = res.apparent_encoding
                 file_name = hash(url_each)
-                with open('picture/result_of_{}.png'.format(file_name), 'wb') as img:
+                with open('picture_result/result_of_{}.png'.format(file_name), 'wb') as img:
                     img.write(res.content)
                     img.close()
 

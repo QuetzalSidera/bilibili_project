@@ -25,9 +25,17 @@ head = {
 # 关键词: [模式，select_enable] select_enable==0自动选择检索结果交互，select_enable==1自己选择检索结果
 # 模式 mode ==-1:全流程 -2:获取音频 -3:仅获取html -4:仅获取画面 -5:自定义 -6(程序中):将被删去的重复项目
 video_config = {
-        "孤独摇滚":[-1,1]
+    "孤独摇滚": [-1, 1]
 }
 
+music_config = {
+    "000dQkg91HoeFZ":[],
+    "004YeSkz4bri31":[],
+    "003y5j4y1vUlQK":[],
+    "000Afm5S4VnArH":[],
+    "001k1R2M3D7H2l":[],
+    "001YKQCr2pryWf":[]
+}
 # bilibili_project_debug_setting_variables_begin
 
 # ID与url流程
@@ -36,8 +44,11 @@ video_config = {
 # 关键词流程
 # 关键词->检索得到结果->选择检索结果(默认选或在交互界面选)->(若选择了分集，合集视频，番剧电影)选集(默认选或在交互界面选)->爬取
 
+
+# music相关
+default_app = "qq_music"
 # 主程序调试变量
-main_debug_setting = 0  # 0:获取视频 1:获取图片 2:都要 3与其他：debug程序
+main_debug_setting = 1 # 0:获取视频 1:获取音乐 2:获取图片 3：全要4:与其他：debug程序
 
 # 模式默认的情况下
 default_mode = -4  # mode == -1:全流程 -2:获取mp3 -3:获取html -4:获取画面 -5

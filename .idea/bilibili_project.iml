@@ -6,6 +6,9 @@
       <excludeFolder url="file://$MODULE_DIR$/picture" />
       <excludeFolder url="file://$MODULE_DIR$/video_result" />
       <excludeFolder url="file://$MODULE_DIR$/video_split" />
+      <excludeFolder url="file://$MODULE_DIR$/audio_file" />
+      <excludeFolder url="file://$MODULE_DIR$/html_file" />
+      <excludeFolder url="file://$MODULE_DIR$/video_file" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
