@@ -1,5 +1,6 @@
 from interface import *
 from user_config import *
+import re
 get_image_debug_setting = 2  # 0:打印获取的html文本 1:打印获取的图片url 2:正常执行全流程
 relative_index = 3  # 相关链接一次递归调用的最大数目，只调用排在0～relative_index区间的相关链接
 max_depth = 6  # 递归调用最大次数

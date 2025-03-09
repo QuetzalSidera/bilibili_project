@@ -180,7 +180,7 @@ def progress_bar(num, index):
     right_part = (num - index) * "." + "|"
     left_part = "*" * index
     print("\r", end="")
-    print("进度: {}{}\033[94m[{}/{}] {:.2f}%\033[0m ".format(left_part, right_part,index,num, percentage), end="")
+    print("进度: {}{}\033[94m[{}/{}] {:.2f}%\033[0m ".format(left_part, right_part, index, num, percentage), end="")
     sys.stdout.flush()
 
 
@@ -234,15 +234,16 @@ def sort_info_list(info_list, type="normal"):
     return new_info_list
 
 
+data_id = "data-v-db178646"  # bilibili网页选集信息id(可能会随着bilibili更新而变化)
 def type_distinguish(res_text):
     tree = etree.HTML(res_text)
     identity_flag = "unknown"
     type_identify = tree.xpath(
-        '//a[@target="_blank" and @href and @title and @class="title jumpable" and @data-v-f4470e68]')  # 合集视频才有
+        '//a[@target="_blank" and @href and @title and @class="title jumpable" and @'+data_id+']')  # 合集视频才有
     if len(type_identify) != 0:  # 合集视频(一般合集，复杂合集)
         identity_flag = "set"
     else:
-        type_identify = tree.xpath('//div[@title="视频选集" and @class="title" and @data-v-f4470e68]')  # 分集视频才有
+        type_identify = tree.xpath('//div[@title="视频选集" and @class="title" and @'+data_id+']')  # 分集视频才有
         if len(type_identify) != 0:  # 分集视频
             identity_flag = "episode video"
         else:

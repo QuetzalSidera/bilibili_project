@@ -1,10 +1,9 @@
-test.py
-test_2.py
+.DS_store
 video_result
 audio_file
 video_file
 html_file
-readme
+music_result
 *.html
 *.mp3
 *.wav
