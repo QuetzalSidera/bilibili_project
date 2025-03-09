@@ -1,5 +1,4 @@
 from json import JSONDecodeError
-import json
 from bs4 import BeautifulSoup
 from moviepy.editor import *
 

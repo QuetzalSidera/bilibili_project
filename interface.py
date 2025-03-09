@@ -1,9 +1,5 @@
-import os
-import sys
-
 from bilibili_lib import *
 import time
-
 
 def user_input_interface(config_dict):
     in_func_dict = {}
@@ -162,7 +158,7 @@ def search_interface(keyword_list):
                 max_index = len(info_list)
                 limited_display_flag = 0
             if limited_display_flag == 1:
-                os.system('clear')
+                # os.system('clear')
                 print("关键词:\"" + keyword + "\"检索结果如下，共" + str(len(info_list)) + "个，仅展示前" + str(
                     len(display_list)) + "个:")
                 display_info_list(display_list)
@@ -175,7 +171,7 @@ def search_interface(keyword_list):
                     if input_result in in_law_index_list:  # 排除特殊字符
                         selected_index_list.append(eval(input_result))
                         selected_id_list.append(display_list[eval(input_result) - 1][0])
-                        os.system('clear')
+                        # os.system('clear')
                         print("关键词:\"" + keyword + "\"检索结果如下，共" + str(len(info_list)) + "个，仅展示前" + str(
                             len(display_list)) + "个:")
                         display_info_list(display_list, selected_id_list)
@@ -194,7 +190,7 @@ def search_interface(keyword_list):
                         selected_id_list.clear()
                         print("重新选择")
                         time.sleep(0.6)
-                        os.system('clear')
+                        # os.system('clear')
                         print("关键词:\"" + keyword + "\"检索结果如下，共" + str(len(info_list)) + "个，仅展示前" + str(
                             len(display_list)) + "个:")
                         display_info_list(display_list, selected_id_list)
@@ -203,14 +199,14 @@ def search_interface(keyword_list):
                     else:
                         print("非法输入")
                         time.sleep(0.6)
-                        os.system('clear')
+                        # os.system('clear')
                         print("关键词:\"" + keyword + "\"检索结果如下，共" + str(len(info_list)) + "个，仅展示前" + str(
                             len(display_list)) + "个:")
                         display_info_list(display_list, selected_id_list)
                         input_result = input("请输入您选择的视频序号:")
 
             if limited_display_flag == 0:
-                os.system('clear')
+                # os.system('clear')
                 print("关键词:\"" + keyword + "\"检索结果如下，共:" + str(len(info_list)) + "个")
                 display_info_list(display_list)
                 in_law_index_list = list(range(1, max_index + 1))
@@ -221,7 +217,7 @@ def search_interface(keyword_list):
                     if input_result in in_law_index_list:  # 排除特殊字符
                         selected_index_list.append(eval(input_result))
                         selected_id_list.append(display_list[eval(input_result) - 1][0])
-                        os.system('clear')
+                        # os.system('clear')
                         print("关键词:\"" + keyword + "\"检索结果如下，共:" + str(len(info_list)) + "个")
                         display_info_list(display_list, selected_id_list)
                         input_result = input("请输入您选择的视频序号:")
@@ -230,20 +226,20 @@ def search_interface(keyword_list):
                         selected_id_list.clear()
                         print("重新选择")
                         time.sleep(0.6)
-                        os.system('clear')
+                        # os.system('clear')
                         print("关键词:\"" + keyword + "\"检索结果如下，共:" + str(len(info_list)) + "个")
                         display_info_list(display_list, selected_id_list)
                         input_result = input("请输入您选择的视频序号,输入exit退出选择,输入delete重新选择:")
                     else:
                         print("非法输入")
                         time.sleep(0.6)
-                        os.system('clear')
+                        # os.system('clear')
                         print("关键词:\"" + keyword + "\"检索结果如下，共:" + str(len(info_list)) + "个")
                         display_info_list(display_list, selected_id_list)
                         input_result = input("请输入您选择的视频序号:")
             print("关键词\"" + keyword + "\"选择结束")
             time.sleep(0.6)
-            os.system('clear')
+            # os.system('clear')
             for index in selected_index_list:
                 in_func_list.append([display_list[index - 1][0], mode, []])
         else:

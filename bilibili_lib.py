@@ -1,7 +1,7 @@
 # bilibili html解析函数库
 import re
 import time
-
+import sys
 import lxml
 import requests
 from lxml import etree
@@ -124,7 +124,7 @@ def from_search_page_get_id(keyword, target_area="all", page_id=1):
             id = id[0]
             id_list.append([id, "ssid"])
     normal_url_list = tree.xpath(
-        '//div[@class="bili-video-card__wrap __scale-wrap"]/a[@target="_blank" and contains(@href,"www.bilibili.com/video/")]/@href')
+        '//div[@class="bili-video-card__info--right"]/a[@target="_blank" and contains(@href,"www.bilibili.com/video/")]/@href')
     for url in normal_url_list:
         id = re.findall('(BV[0-9a-zA-Z]+)', url)[0]
         id_list.append([id, "BVid"])
