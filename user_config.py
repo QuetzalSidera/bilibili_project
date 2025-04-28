@@ -15,10 +15,10 @@ head = {
 
 video_config = {
     # 输入样例
-    "https://www.bilibili.com/video/BV1pM41117Yr":[-1,1],
-    "BV1pM41117Yr": [-1, 1],
-    "ss43164": [-1, 12],
-    "孤独摇滚":[-3,1]
+    # "https://www.bilibili.com/video/BV1pM41117Yr": [-1, 1],
+    # "BV1pM41117Yr": [-1, 1],
+    # "ss43164": [-1, 12],
+    # "孤独摇滚": [-3, 1],
 
     # 测试用例，分集视频
     # "BV1gp421X78k": [-1],
@@ -26,7 +26,9 @@ video_config = {
     # 测试用例，一般合集视频
     # "BV1mN1jYCEAo": [-1],
     # 测试用例，复杂合集视频
-    # "BV19T421k75K": [-1]
+    # "BV19T421k75K": [-1],
+    # "BV1ndryYBEav":[-1],
+    "BV1F6PWeBEJC":[-1],
 }
 
 # 空项默认情况的认定

@@ -234,16 +234,19 @@ def sort_info_list(info_list, type="normal"):
     return new_info_list
 
 
-data_id = "data-v-db178646"  # bilibili网页选集信息id(可能会随着bilibili更新而变化)
+data_id = "data-v-dac4fbd2"  # bilibili网页选集信息id(可能会随着bilibili更新而变化)
 def type_distinguish(res_text):
     tree = etree.HTML(res_text)
     identity_flag = "unknown"
+    # type_identify = tree.xpath(
+    #     '//a[@target="_blank" and @href and @title and @class="title jumpable" and @'+data_id+']')  # 合集视频才有
     type_identify = tree.xpath(
-        '//a[@target="_blank" and @href and @title and @class="title jumpable" and @'+data_id+']')  # 合集视频才有
+        '//a[@target="_blank" and @href and @title and @class="title jumpable"]')  # 合集视频才有
     if len(type_identify) != 0:  # 合集视频(一般合集，复杂合集)
         identity_flag = "set"
     else:
-        type_identify = tree.xpath('//div[@title="视频选集" and @class="title" and @'+data_id+']')  # 分集视频才有
+        # type_identify = tree.xpath('//div[@title="视频选集" and @class="title" and @'+data_id+']')  # 分集视频才有
+        type_identify = tree.xpath('//div[@title="视频选集" and @class="title"]')  # 分集视频才有
         if len(type_identify) != 0:  # 分集视频
             identity_flag = "episode video"
         else:
