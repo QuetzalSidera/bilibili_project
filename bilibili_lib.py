@@ -191,6 +191,7 @@ def progress_bar(num, index):
 
 # 普通视频：[ID号,标题,视频类型标签=ordinary video] atmo
 # 分集视频： [ID号,标题，分集id列表[数字]，分集标题列表[]，视频类型标签=episode video] atmo
+# 互动视频：[ID号，标题，]
 # 合集视频：[ID号,标题，atmo_list[atmo]，视频类型标签=ordinary set]
 # 复杂合集：[合集id，标题,分集列表section_list[section]，视频类型标签=complex set]
 # section[]格式： [section_id,标题，atmo_list[atmo]，视频类型标签=ordinary set]
@@ -234,7 +235,9 @@ def sort_info_list(info_list, type="normal"):
     return new_info_list
 
 
-data_id = "data-v-dac4fbd2"  # bilibili网页选集信息id(可能会随着bilibili更新而变化)
+data_id = "data-v-dac4fbd2"  # bilibili网页选集信息id(可能会随着bilibili更新而变化)(现已取消使用data_id匹配html标签)
+
+
 def type_distinguish(res_text):
     tree = etree.HTML(res_text)
     identity_flag = "unknown"
@@ -254,8 +257,13 @@ def type_distinguish(res_text):
                 '//link[@rel="sitemap" and @type="application/xml" and @title="Sitemap" and @href]')  # 番剧电影或者贴片才有
             if len(type_identify) != 0:  # 番剧电影或者贴片
                 identity_flag = "bangumi"
-            else:  # 一般视频
-                identity_flag = "ordinary video"
+            else:  # 一般视频或互动视频
+                # 检验标签：<div class="interactive-text" data-v-aed3e268>互动视频</div>
+                type_identify = tree.xpath('//div[@class="interactive-text"]/text()')
+                if type_identify[0] == "互动视频":  # 互动视频
+                    identity_flag = "interactive video"
+                else:  # 一般视频
+                    identity_flag = "ordinary video"
     return identity_flag
 
 
@@ -276,6 +284,9 @@ def get_ordinary_video_info(res_text):
     info = [id, title, identity_flag]
     # info格式 [ID号,标题,视频类型标签]
     return info
+
+def get_interactive_video_info(res_text):
+    tree = etree.HTML(res_text)
 
 
 def get_bangumi_info(res_text, type):
@@ -529,6 +540,10 @@ def display_info_list(info_list, special_item_id_list="none"):
                 title = special_atmo_in_set[1]
             else:
                 title = info[1]
+        elif info[-1] == "interactive video":  # 复杂合集视频
+            tag = "(互动视频)"
+            episode = ""
+            title = info[1]
         else:
             tag = "unknown"
             episode = "unknown"

@@ -1,7 +1,7 @@
 from json import JSONDecodeError
-from bs4 import BeautifulSoup
-from moviepy.editor import *
 
+from moviepy.editor import *
+from bs4 import BeautifulSoup
 from interface import *
 from user_config import *
 
@@ -33,7 +33,8 @@ def set_unfold_and_commit_to_core(result):
         mode = result[-2]
         episode_url = "https://www.bilibili.com/bangumi/play/" + episode_id
         core_function(episode_url, mode)
-
+    if result[-1] == "interactive video":  # 互动视频
+        pass
     if result[-1] == "ordinary video":
         video_id = result[0]
         mode = result[-2]

@@ -1,11 +1,6 @@
-.DS_store
-video_result
-audio_file
-video_file
-html_file
-music_result
-*.html
-*.mp3
-*.wav
-*.mp4
-*.venv
+.venv
+audio_file/
+html_file/
+video_file/
+video_result/
+test*

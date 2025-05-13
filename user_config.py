@@ -23,11 +23,15 @@ video_config = {
     # 测试用例，分集视频
     # "BV1gp421X78k": [-1],
     # 测试用例，一般合集视频
-    "BV1mN1jYCEAo": [-1],
+    # "BV1mN1jYCEAo": [-1],
     # 测试用例，复杂合集视频
     # "BV19T421k75K": [-1],
     # "BV1ndryYBEav":[-1],
     # "BV1F6PWeBEJC":[-1],
+    #测试用例，互动视频
+    # "BV1FGGvzLEeT":[-3]
+    # "BV14iGdzJEYc":[-1]
+    "BV1n51xYbEMT":[-1]
 }
 
 # 空项默认情况的认定

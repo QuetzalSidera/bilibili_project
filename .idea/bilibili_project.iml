@@ -10,7 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/html_file" />
       <excludeFolder url="file://$MODULE_DIR$/video_file" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.9" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.9 (bilibili_project) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
